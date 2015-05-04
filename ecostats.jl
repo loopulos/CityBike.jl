@@ -16,7 +16,7 @@ fin = readdlm("/home/alfredo/Ecobici/final.txt", Int)
 distro = zeros(ns,ns)
 N = 0
 for i= 1:length(ini)
-  if ini[i] <= ns && fin[i] <= ns
+  if ini[i] <= ns && fin[i] <= ns && ini[i] != fin[i]
     N += 1
     distro[ini[i],fin[i]] += 1
   end
@@ -29,7 +29,7 @@ writetable("dists.tsv", convert(DataFrame, dists), header=false)
 for i = 1:ns
   for j= 1:ns
      if distro[i,j] > 0
-        admat[i,j] = 1/N #es con la normalizacion nada mas
+        admat[i,j] = distro[i,j]/N #es con la normalizacion nada mas
        #println(i,"\t",j,"\t ",distro[i,j],"\t",dists[i,j])
       else
        admat[i,j] = 0
@@ -37,3 +37,4 @@ for i = 1:ns
    end
 end
 writetable("adjmat.tsv", convert(DataFrame, admat), header=false)
+println(N)
