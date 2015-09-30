@@ -1,7 +1,0 @@
-Los datos que se encuentran en el repo son:
-ecobici_distancias.csv -> las estaciones y distancia entre ellas
-init.txt final.txt -> son las estaciones iniciales y finales que se usaron durante 2010 y 2013, el archivo completo no lo agregué porque es muy pesado
-ecostats.jl -> es el programa con el que se calcula la distro
-distro.dat -> es el output del programa ecostats, en el viene: estacion final, estacion inicial, #veces que se uso en estos años, distancia entre estaciones.
-adjmat.tsv -> es la matriz de adjacencia normalizada
-matriz.tsv -> matriz de adyacencia con pesos sin normalizar
