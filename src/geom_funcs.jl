@@ -2,7 +2,7 @@
 ### FUNCIONES GEOMETRICAS
 ###==========================###==========================###
 
-# Fucncion para calcular distancias entre coordenadas
+# Funcion para calcular distancias entre coordenadas
 
 function calc_dist(lat1::Float64, long1::Float64, lat2::Float64, long2::Float64)
 
