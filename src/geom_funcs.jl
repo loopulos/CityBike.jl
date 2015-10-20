@@ -23,3 +23,30 @@ function calc_dist(lat1::Float64, long1::Float64, lat2::Float64, long2::Float64)
 end
 
 ###==========================###==========================###
+#La funcion construye la matriz geometrica a partir de una
+#lista de coordenadas de las estaciones
+function cons_mdist(estaciones::Array{Float64,2})
+    N = size(estaciones,1)
+    mat_dist = zeros(Float64,(N,N))
+    k = 1
+    for i = 1:N, j = i:N #corre el arreglo sin repetir
+        dist = calc_dist(estaciones[i,2],estaciones[i,3],estaciones[j,2],estaciones[j,3])
+        mat_dist[i,j] = mat_dist[j,i] = dist #recordar que la matriz es simetrica
+    end
+    return mat_dist
+end
+###==========================###==========================###
+#La funcion construye vector con distancias entre estaciones
+#de una lista de coordenadas de las estaciones
+function cons_vdist(estaciones::Array{Float64,2})
+    N = size(estaciones,1)
+    vec_dist = zeros(Float64,div(N*(N-1),2))
+    k = 1
+    for i = 1:N, j = i:N #corre el arreglo sin repetir
+        dist = calc_dist(estaciones[i,2],estaciones[i,3],estaciones[j,2],estaciones[j,3])
+        vec_dist[k] = dist
+        k += 1
+    end
+    return vec_dist
+end
+###==========================###==========================###
