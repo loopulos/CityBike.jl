@@ -1,5 +1,5 @@
 ###==========================###==========================###
-### FUNCIONES GEOMETRICAS
+### TOOLS FOR CONSTRUCT AND MANIPULATE NETWORKS
 ###==========================###==========================###
 
 # Funcion para calcular distancias entre coordenadas
