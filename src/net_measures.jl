@@ -1,4 +1,4 @@
-#This file contains different functions of network measures
+#This file contains functions of different network measures
 #
 ##########################################################################
 #this is the degree centrality, the argument is the Adjacency matrix
