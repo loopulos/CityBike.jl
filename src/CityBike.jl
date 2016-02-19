@@ -3,8 +3,9 @@
 
 module CityBike
 
-    export calc_dist
+    export cent_degree, cent_eigenv, cent_closeness
 
-    include("geom_funcs.jl")
+    include("net_measures.jl")
+    include("net_tools.jl")
 
 end
