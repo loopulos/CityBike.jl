@@ -4,8 +4,7 @@ y = ARGS[1]
 
 # raw_data = readcsv("/home/martin/Documents/datos_ecobici/EcobiciDF/2010.csv") # cubo
 raw_data = readcsv("/home/martin/datos_ecobici/EcobiciDF/$(y).csv") # comadreja
-
-raw_data = readcsv("/Users/martinC3/Google Drive/EcobiciDATA/EcobiciDF/2014.csv")
+#raw_data = readcsv("/Users/martinC3/Google Drive/EcobiciDATA/EcobiciDF/2014.csv")
 
 file = open("filt_$(y).csv", "w")
 
