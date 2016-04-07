@@ -13,8 +13,8 @@ end
 ############################################################################
 #this is the eigenvector centrality, it takes the adjacency matrix as an argument
 function cent_eigenv(A::Array{Float64,2})
-    n = size(A,1)
     x = ones(Float64, n)
+    n = size(A,1)
     λ = eigmax(A) #this is the largest eigenvalue of the adjacency matrix
     C = zeros(Float64, n)
     for i = 1:n
@@ -45,3 +45,4 @@ function cent_closeness(A::Array{Float64,2})
     end
     return cc
 end
+############################################################################

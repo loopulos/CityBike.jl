@@ -40,11 +40,12 @@ end
 #de una lista de coordenadas de las estaciones
 function cons_vdist(estaciones::Array{Float64,2})
     N = size(estaciones,1)
-    vec_dist = zeros(Float64,div(N*(N-1),2))
+    vec_dist = zeros(Float64,(div(N*(N-1),2),3))
     k = 1
-    for i = 1:N, j = i:N #corre el arreglo sin repetir
+    for i = 1:N, j = (i+1):N #corre el arreglo sin repetir
         dist = calc_dist(estaciones[i,2],estaciones[i,3],estaciones[j,2],estaciones[j,3])
-        vec_dist[k] = dist
+        vec_dist[k,1] = estaciones[i,1]; vec_dist[k,2] = estaciones[j,1]
+        vec_dist[k,3] = dist
         k += 1
     end
     return vec_dist
