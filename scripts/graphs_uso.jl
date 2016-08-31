@@ -1,8 +1,8 @@
 using PyPlot
 
 # cd("/home/martin/Documents/datos_ecobici/EcobiciDF") #cubo
-cd("/Users/martinC3/Google Drive/EcobiciDATA/EcobiciDF") #C3
-
+#cd("/Users/martinC3/Google Drive/EcobiciDATA/EcobiciDF") #C3
+cd("/home/alfredo/Google Drive/EcobiciDATA/EcobiciNYC")
 pwd()
 
 files = readdir()
@@ -33,11 +33,11 @@ plt[:ylabel]("P(t)")
 plt[:xlabel]("h")
 plt[:ylabel]("P(h)")
 
-plt[:title]("Duracion viajes")
-plt[:title]("Weekday")
-plt[:title]("Weekend")
+plt[:title]("Duracion viajes NY")
+plt[:title]("Weekday NY")
+plt[:title]("Weekend NY")
 
-plt[:clf]()
+plt[:clf]()  #esta madre es para limpiar la ventana jaja
 
 # filtra dias entre semana y fines de semana
 for file in travs_files
