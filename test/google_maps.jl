@@ -10,18 +10,24 @@ destination = "19.36065%2C-99.168669"
 origin = "19.373262%2C-99.184333"
 destination = "19.371152%2C-99.183034"
 
-mode = "driving"
+mode = ["driving", "bicycling", "transit"]
 traffic_model = "best_guess"
 transit_mode = "subway"
 
-URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode)&key=$(key)"
+estaciones = readcsv("/Users/martinC3/Google Drive/EcobiciDATA/EcobiciDF/estacionesn.csv")
 
-URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode)&transit_mode=$(transit_mode)&key=$(key)"
+for i in 1:15
+    println(i, estaciones[1, i])
+end
 
-println(URL)
 
-response = Requests.json(get(URL))
+durs = zeros(3, )
 
-response["rows"][1]["elements"][1]["duration"]["value"]
+for i in length(mode):
 
-response["rows"][1]["elements"]
+    URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[i])&key=$(key)"
+
+    response = Requests.json(get(URL))
+    response["rows"][1]["elements"][1]["duration"]["value"]
+
+end
