@@ -1,6 +1,7 @@
 using PyPlot
 
-path = "/Users/mzumaya/Google Drive/EcobiciDATA/EcobiciDF/"
+#path = "/Users/mzumaya/Google Drive/EcobiciDATA/EcobiciDF/"
+path = "/home/alfredo/GoogleDrive/EcobiciDATA/EcobiciDF/"
 
 files = filter(x -> ismatch( r"filt_\d+.csv", x), readdir(path))
 
@@ -12,7 +13,7 @@ for j in 1:length(files)
 
   println(files[j])
 
-  pairs = Dict()
+  pairs = Dict();
 
   for i in 2:size(data,1)
 
@@ -30,6 +31,7 @@ for j in 1:length(files)
 
   end
 
+  #writecsv("$(files[j])", pairs)
   println(length(values(pairs)))
 
   # pairs_freq = zeros()
