@@ -40,4 +40,4 @@ for j in 1:length(files)
 
 end
 
-plot([i for i in 1:length(dist_pairs)]
+plot([i for i in 1:length(dist_pairs)], dist_pairs)
