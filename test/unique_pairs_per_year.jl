@@ -1,3 +1,4 @@
+using PyPlot
 
 path = "/Users/mzumaya/Google Drive/EcobiciDATA/EcobiciDF/"
 
@@ -37,4 +38,4 @@ for j in 1:length(files)
 
 end
 
-dist_pairs
+plot([i for i in 1:length(dist_pairs)]
