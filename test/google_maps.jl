@@ -1,5 +1,6 @@
 using Requests
 key = "AIzaSyCXia5c3mcH4rxdFtLl6qOew0g_W5qOGrE"
+key2 = "AIzaSyDPPYMVTpm-utCdroeBHN_K8EmHFsQOpbE"
 estaciones = float64([readcsv("estacionesn.csv")[2:end,1] readcsv("estacionesn.csv")[2:end,10:11]])
 # lat, long
 #traffic_model = "best_guess"
@@ -41,7 +42,7 @@ for j = 1:ns
 
         for i = 0:(length(mode)-1) #se realizan los requests en los 3 modos
 
-            URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[1])&key=$(key)"
+            URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[i+1])&key=$(key)"
             response = Requests.json(get(URL))
             println(j,'\t',l,'\t',mode[i+1],'\t',response["status"])
             for k = 1:100 #este es para almacenar cada uno de los 100 request que se enviaron
