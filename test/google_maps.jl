@@ -23,9 +23,6 @@ durs = zeros(size(usos)[1],8)  #es el arreglo de salida
 mode = ["driving", "bicycling", "transit"] #los modos que hay para hacer el request
 
 mat = usos[usos[:,1].==1,:]
-divrem(size(mat)[1], 100)
-estaciones[estaciones[:,1].==1,:]
-
 
 s = 1
 for j = 1:ns
