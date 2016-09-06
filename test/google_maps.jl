@@ -22,50 +22,50 @@ usos = int(readcsv("usofilt2_2015.csv"))#el uso de estaciones filtrado
 ns = 452 #numero de estaciones que hay
 durs = Array(Array{Float64,2},ns)  #es el arreglo de salida
 mode = ["driving", "bicycling", "transit"] #los modos que hay para hacer el request
-
+sb = 10 #tamanio del bloque
 
 for j = 1:ns
     mat = usos[usos[:,1].==j,:] #trabaja sobre el indice j de los datos,
-    nit = divrem(size(mat)[1], 100) #se obtiene cuantas iteraciones de 100 y el sobrante para hacer el request
+    nit = divrem(size(mat)[1], sb) #se obtiene cuantas iteraciones de 100 y el sobrante para hacer el request
     lat1 = estaciones[estaciones[:,1].==j,:][2]; long1 = estaciones[estaciones[:,1].==j,:][3] #aqui se define la estacion de inicio (coordenadas)
     origin = string(lat1,",",long1)
     durs[j] = zeros(size(mat)[1], 8)
 
     for l = 0:(nit[1]-1) #aqui se van a construir los bloques para los requests
-        lat2 = estaciones[estaciones[:,1].==mat[l*100+1,2],:][2]; long2 = estaciones[estaciones[:,1].==mat[l*100+1,2],:][3]
+        lat2 = estaciones[estaciones[:,1].==mat[l*sb+1,2],:][2]; long2 = estaciones[estaciones[:,1].==mat[l*sb+1,2],:][3]
         destination = string(lat2,"%2C",long2); durs[j][1,1] = mat[1,1]; durs[j][1,2] = mat[1,2]
         #Aqui se concatenan las de llegada restantes (100 max)
-        for i = 2:100
-            destination = destination*string("%7C",estaciones[estaciones[:,1].==mat[l*100+i,2],:][2],"%2C",estaciones[estaciones[:,1].==mat[l*100+i,2],:][3])
-            durs[j][l*100+i,1] = mat[l*100+i,1]; durs[j][l*100+i,2] = mat[l*100+i,2]
+        for i = 2:sb
+            destination = destination*string("%7C",estaciones[estaciones[:,1].==mat[l*sb+i,2],:][2],"%2C",estaciones[estaciones[:,1].==mat[l*sb+i,2],:][3])
+            durs[j][l*sb+i,1] = mat[l*sb+i,1]; durs[j][l*sb+i,2] = mat[l*sb+i,2]
         end
 
         for i = 0:(length(mode)-1) #se realizan los requests en los 3 modos
 
-            URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[i+1])&key=$(key)"
+            URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[i+1])&key=$(key2)"
             response = Requests.json(get(URL))
             println(j,'\t',l,'\t',mode[i+1],'\t',response["status"])
-            for k = 1:100 #este es para almacenar cada uno de los 100 request que se enviaron
-                durs[j][l*100+k,2 + 2*i+1] = response["rows"][1]["elements"][k]["distance"]["value"]
-                durs[j][l*100+k,2 + 2*i+2] = response["rows"][1]["elements"][k]["duration"]["value"]
+            for k = 1:sb #este es para almacenar cada uno de los sb request que se enviaron
+                durs[j][l*sb+k,2 + 2*i+1] = response["rows"][1]["elements"][k]["distance"]["value"]
+                durs[j][l*sb+k,2 + 2*i+2] = response["rows"][1]["elements"][k]["duration"]["value"]
             end
         end
     end
-    #falta enviar el request faltante (sobrante de n/100)
+    #falta enviar el request faltante (sobrante de n/sb)
 
-    lat2 = estaciones[estaciones[:,1].==mat[nit[1]*100+1,2],:][2]; long2 =estaciones[estaciones[:,1].==mat[nit[1]*100+1,2],:][3]
+    lat2 = estaciones[estaciones[:,1].==mat[nit[1]*sb+1,2],:][2]; long2 =estaciones[estaciones[:,1].==mat[nit[1]*sb+1,2],:][3]
     destination = string(lat2,"%2C",long2)
     for i = 2:nit[2]
-        destination = destination*string("%7C",estaciones[estaciones[:,1].==mat[nit[1]*100+i,2],:][2],"%2C",estaciones[estaciones[:,1].==mat[nit[1]*100+i,2],:][3])
-        durs[j][nit[1]*100+i,1] = mat[nit[1]*100+i,1]; durs[j][nit[1]*100+i,2] = mat[nit[1]*100+i,2]
+        destination = destination*string("%7C",estaciones[estaciones[:,1].==mat[nit[1]*sb+i,2],:][2],"%2C",estaciones[estaciones[:,1].==mat[nit[1]*sb+i,2],:][3])
+        durs[j][nit[1]*sb+i,1] = mat[nit[1]*sb+i,1]; durs[j][nit[1]*sb+i,2] = mat[nit[1]*sb+i,2]
     end
     for i = 0:(length(mode)-1) #se realizan los requests en los 3 modos
         #println(j,'\t',k,'\t',i)
         URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[i+1])&key=$(key)"
         response = Requests.json(get(URL))
-        for k = 1:nit[2] #este es para almacenar cada uno de los 100 request que se enviaron
-            durs[nit[1]*100+k,2 + 2*i+1] = response["rows"][1]["elements"][k]["distance"]["value"]
-            durs[nit[1]*100+k,2 + 2*i+2] = response["rows"][1]["elements"][k]["duration"]["value"]
+        for k = 1:nit[2] #este es para almacenar cada uno de los sb request que se enviaron
+            durs[nit[1]*sb+k,2 + 2*i+1] = response["rows"][1]["elements"][k]["distance"]["value"]
+            durs[nit[1]*sb+k,2 + 2*i+2] = response["rows"][1]["elements"][k]["duration"]["value"]
         end
     end
 
