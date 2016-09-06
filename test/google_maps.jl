@@ -1,6 +1,6 @@
 using Requests
 key = "AIzaSyCXia5c3mcH4rxdFtLl6qOew0g_W5qOGrE"
-key2 = "AIzaSyDPPYMVTpm-utCdroeBHN_K8EmHFsQOpbE"
+key2 = "AIzaSyDrhZkvOxrJkyCYwr17i7evXod8LCF1AEo"
 estaciones = float64([readcsv("estacionesn.csv")[2:end,1] readcsv("estacionesn.csv")[2:end,10:11]])
 # lat, long
 #traffic_model = "best_guess"
@@ -8,14 +8,14 @@ estaciones = float64([readcsv("estacionesn.csv")[2:end,1] readcsv("estacionesn.c
 
 ######################ESTA ES LA SECCION DE PRUEBA ########################################################################################################
 # origin = string(estaciones[1,2],",",estaciones[1,3])
-# destination = string(estaciones[11,2],"%2C",estaciones[11,3])
-# for i = 2:100
-#     #origin = origin*string("|",estaciones[i,2],",",estaciones[i,3])
-#     destination = destination*string("%7C",estaciones[i,2],"%2C",estaciones[i,3])
-# end
-# URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=transit&key=$(key)"
-# response = Requests.json(get(URL))
-# response["rows"][1]["elements"][100]["distance"]["value"]
+#  destination = string(estaciones[11,2],"%2C",estaciones[11,3])
+#  for i = 2:100
+#      #origin = origin*string("|",estaciones[i,2],",",estaciones[i,3])
+#      destination = destination*string("%7C",estaciones[i,2],"%2C",estaciones[i,3])
+#  end
+#  URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=transit&key=$(key2)"
+#  response = Requests.json(get(URL))
+#  response["rows"][1]["elements"][100]["distance"]["value"]
 #####################################################AQUI EMPIEZA #############################################################
 
 usos = int(readcsv("usofilt2_2015.csv"))#el uso de estaciones filtrado
