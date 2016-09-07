@@ -1,11 +1,11 @@
 # using PyPlot
 
-# path = "/Users/mzumaya/Google Drive/EcobiciDATA/EcobiciDF/"
-path = "/home/alfredo/GoogleDrive/EcobiciDATA/EcobiciDF/"
+path = "/Users/mzumaya/Google Drive/EcobiciDATA/EcobiciDF/"
+# path = "/home/alfredo/GoogleDrive/EcobiciDATA/EcobiciDF/"
 
-files = filter(x -> ismatch( r"filt_\d+.csv", x), readdir(path))
+files = filter(x -> ismatch( r"filt_\d+.", x), readdir(path))
 
-dist_pairs = zeros(Int64, length(files))
+# dist_pairs = zeros(Int64, length(files))
 
 for j in 1:length(files)
 
@@ -19,13 +19,17 @@ for j in 1:length(files)
 
     key = (data[i, 1], data[i, 2])
 
-    if haskey(pairs, key) == false
+    if key[1] != key[2] && key[1] < 1000 && key[2] < 1000
 
-      pairs[key] = 1
+      if haskey(pairs, key) == false
 
-    else
+        pairs[key] = 1
 
-      pairs[key] += 1
+      else
+
+        pairs[key] += 1
+
+      end
 
     end
 
@@ -34,7 +38,7 @@ for j in 1:length(files)
   # ordena llaves por estacion de salida
   keys_sort = sort(collect(keys(pairs)))
 
-  file = open(path*"uso"*files[j], "w")
+  file = open(path*"uso_"*split(files[j], "filt_")[2], "w")
 
   println(file, "id_start,id_end,freq")
 
@@ -44,13 +48,12 @@ for j in 1:length(files)
 
   close(file)
 
-
   #writecsv("$(files[j])", pairs)
   # println(length(values(pairs)))
 
   # pairs_freq = zeros()
 
-  dist_pairs[j] = length(keys(pairs))
+  # dist_pairs[j] = length(keys(pairs))
 
 end
 
