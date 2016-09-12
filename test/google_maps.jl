@@ -6,7 +6,12 @@ estaciones = float64([readcsv("estacionesn.csv")[2:end,1] readcsv("estacionesn.c
 #traffic_model = "best_guess"
 #transit_mode = "subway"
 function manda(args::Array{Int64,1},mode::Array{ASCIIString,1},origin::AbstractString,destination::AbstractString,key::AbstractString, durs::Array{Float64,2})
-    l,sb = args
+    l,sb,nit = args
+    if sb != nit
+        tam = nit
+    else
+        tam = sb
+    end
     for i = 0:(length(mode)-1) #se realizan los requests en los 3 modos
 
         URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[i+1])&key=$(key)"
@@ -14,9 +19,11 @@ function manda(args::Array{Int64,1},mode::Array{ASCIIString,1},origin::AbstractS
         produce("recibido")
         sleep(5)
         println(l,'\t',mode[i+1],'\t',response["status"])
-        for k = 1:sb #este es para almacenar cada uno de los sb request que se enviaron
+        for k = 1:tam #este es para almacenar cada uno de los sb request que se enviaron
+            if response["rows"][1]["elements"][k]["status"] != "OK"; continue; end
             durs[l*sb+k,2 + 2*i+1] = response["rows"][1]["elements"][k]["distance"]["value"]
             durs[l*sb+k,2 + 2*i+2] = response["rows"][1]["elements"][k]["duration"]["value"]
+            #println(l*sb+k,'\t',response["rows"][1]["elements"][k]["status"])
         end
     end
 end
@@ -27,12 +34,12 @@ end
 #       #origin = origin*string("|",estaciones[i,2],",",estaciones[i,3])
 #    destination = destination*string("%7C",estaciones[i,2],"%2C",estaciones[i,3])
 # end
-URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[1])&key=$(key)"
-response = Requests.json(get(URL))
-response["rows"][1]["elements"][1]["distance"]["value"]
+#URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[3])&key=$(key)"
+#response = Requests.json(get(URL))
+#response["rows"][1]["elements"][1]["distance"]["value"]
 
-origin  = string(estaciones[estaciones[:,1].==1,:][2],",",estaciones[estaciones[:,1].==1,:][3])
-destination = string(estaciones[estaciones[:,1].==433,:][2],"%2C",estaciones[estaciones[:,1].==433,:][3])
+# origin  = string(estaciones[estaciones[:,1].==2,:][2],",",estaciones[estaciones[:,1].==2,:][3])
+# destination = string(estaciones[estaciones[:,1].==94,:][2],"%2C",estaciones[estaciones[:,1].==94,:][3])
 #####################################################AQUI EMPIEZA #############################################################
 
 usos = int(readcsv("usofilt2_2015.csv"))#el uso de estaciones filtrado
@@ -42,8 +49,8 @@ mode = ["driving", "bicycling", "transit"] #los modos que hay para hacer el requ
 sb = 100 #tamanio del bloque
 key = key1
 
-for j = 1:ns
-    mat = usos[usos[:,1].==j,:] #trabaja sobre el indice j de los datos,
+for j = 2:3
+    mat = usos[usos[:,1].==j,:] #trabaja sobre el indice j de los datos,ñ
     nit = divrem(size(mat)[1], sb) #se obtiene cuantas iteraciones de 100 y el sobrante para hacer el request
     lat1 = estaciones[estaciones[:,1].==j,:][2]; long1 = estaciones[estaciones[:,1].==j,:][3] #aqui se define la estacion de inicio (coordenadas)
     origin = string(lat1,",",long1)
@@ -57,7 +64,7 @@ for j = 1:ns
             destination = destination*string("%7C",estaciones[estaciones[:,1].==mat[l*sb+i,2],:][2],"%2C",estaciones[estaciones[:,1].==mat[l*sb+i,2],:][3])
             durs[j][l*sb+i,1] = mat[l*sb+i,1]; durs[j][l*sb+i,2] = mat[l*sb+i,2]
         end
-        args = [l,sb]
+        args = [l,sb,sb]
         taskQ = Task(() -> manda(args,mode,origin,destination,key,durs[j]))
         for x in taskQ
         end
@@ -71,7 +78,7 @@ for j = 1:ns
         destination = destination*string("%7C",estaciones[estaciones[:,1].==mat[nit[1]*sb+i,2],:][2],"%2C",estaciones[estaciones[:,1].==mat[nit[1]*sb+i,2],:][3])
         durs[j][nit[1]*sb+i,1] = mat[nit[1]*sb+i,1]; durs[j][nit[1]*sb+i,2] = mat[nit[1]*sb+i,2]
     end
-    args = [nit[1],nit[2]]
+    args = [nit[1],sb,nit[2]]
     taskQ = Task(() -> manda(args,mode,origin,destination,key,durs[j]))
     for x in taskQ
     end
@@ -79,7 +86,7 @@ end
 ##################
 durs[1]
 usos[usos[:,1].==2,:][100,:]
-a = durs[2]
-a[a[:,1].==2.0,:]
+a = durs[2][92,2]
+a[a[:,2].==93.0,:]
 a[100,2]
 findfirst(a[:,1],0)
