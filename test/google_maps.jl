@@ -1,6 +1,5 @@
 using Requests
-key1 = "AIzaSyCXia5c3mcH4rxdFtLl6qOew0g_W5qOGrE"
-key2 = "AIzaSyDrhZkvOxrJkyCYwr17i7evXod8LCF1AEo"
+keys = ["AIzaSyCXia5c3mcH4rxdFtLl6qOew0g_W5qOGrE","AIzaSyDrhZkvOxrJkyCYwr17i7evXod8LCF1AEo","AIzaSyAryDOjorWqN5UIPG0uDQ3Ka2SNQnjjC0M","AIzaSyAKnBvFaRTFSqmIypjDsUvuqVbP-aKeIVg","AIzaSyDm2onf5ESbukrMTooYIL1Ln89ulcdtmkg","AIzaSyDXAlJ1PM0nnIPZGkia5GynofyoayRlG_o","AIzaSyD7ba-NzLSKOvkMYBoqZeMktSvfKn4cy9M"]
 estaciones = float64([readcsv("estacionesn.csv")[2:end,1] readcsv("estacionesn.csv")[2:end,10:11]])
 # lat, long
 #traffic_model = "best_guess"
@@ -34,12 +33,13 @@ end
 #       #origin = origin*string("|",estaciones[i,2],",",estaciones[i,3])
 #    destination = destination*string("%7C",estaciones[i,2],"%2C",estaciones[i,3])
 # end
-#URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[3])&key=$(key)"
-#response = Requests.json(get(URL))
-#response["rows"][1]["elements"][1]["distance"]["value"]
-
-# origin  = string(estaciones[estaciones[:,1].==2,:][2],",",estaciones[estaciones[:,1].==2,:][3])
-# destination = string(estaciones[estaciones[:,1].==94,:][2],"%2C",estaciones[estaciones[:,1].==94,:][3])
+# URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[2])&key=$(key)"
+# response = Requests.json(get(URL))
+# response["rows"][1]["elements"][1]["distance"]["value"]
+# response["rows"][1]["elements"][1]["duration"]["value"]
+#
+# destination = string(estaciones[estaciones[:,1].==211,:][2],"%2C",estaciones[estaciones[:,1].==211,:][3])
+# origin  = string(estaciones[estaciones[:,1].==217,:][2],",",estaciones[estaciones[:,1].==217,:][3])
 #####################################################AQUI EMPIEZA #############################################################
 
 usos = int(readcsv("usofilt2_2015.csv"))#el uso de estaciones filtrado
@@ -47,9 +47,9 @@ ns = 452 #numero de estaciones que hay
 durs = Array(Array{Float64,2},ns)  #es el arreglo de salida
 mode = ["driving", "bicycling", "transit"] #los modos que hay para hacer el request
 sb = 100 #tamanio del bloque
-key = key1
+key = keys[1]
 
-for j = 2:3
+for j = 4:4
     mat = usos[usos[:,1].==j,:] #trabaja sobre el indice j de los datos,ñ
     nit = divrem(size(mat)[1], sb) #se obtiene cuantas iteraciones de 100 y el sobrante para hacer el request
     lat1 = estaciones[estaciones[:,1].==j,:][2]; long1 = estaciones[estaciones[:,1].==j,:][3] #aqui se define la estacion de inicio (coordenadas)
@@ -84,7 +84,7 @@ for j = 2:3
     end
 end
 ##################
-durs[1]
+durs[3]
 usos[usos[:,1].==2,:][100,:]
 a = durs[2][92,2]
 a[a[:,2].==93.0,:]
