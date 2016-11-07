@@ -44,7 +44,7 @@ end
 #ns = 452 #numero de estaciones que hay
 durs = zeros(300,8)  #es el arreglo de salida
 mode = ["driving", "bicycling", "transit"] #los modos que hay para hacer el request #tamanio del bloque
-key = keys[2]
+key = keys[1]
 
 for j = 1:300
     #mat = usos[usos[:,1].==j,:] #trabaja sobre el indice j de los datos,
@@ -76,4 +76,5 @@ for j = 1:300
     # for x in taskQ
     # end
 end
+writedlm("datos.dat",durs)
 ##################
