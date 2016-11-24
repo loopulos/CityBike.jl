@@ -5,7 +5,7 @@ first300 = readdlm("estaciones300.dat", Int64)
 # lat, long
 #traffic_model = "best_guess"
 #transit_mode = "subway"
-function manda(j::Int64,mode::Array{ASCIIString,1},origin::AbstractString,destination::AbstractString,key::AbstractString, durs::Array{Float64,2})
+function manda(j::Int64,mode::Array{ASCIIString,1},origin::AbstractString,destination::AbstractString,keys::Array{AbstractString,1}, durs::Array{Float64,2})
 #    l,j,nit = args
 #    if sb != nit
 #        tam = nit
@@ -14,37 +14,30 @@ function manda(j::Int64,mode::Array{ASCIIString,1},origin::AbstractString,destin
 #    end
     for i = 0:(length(mode)-1) #se realizan los requests en los 3 modos
 
-        URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[i+1])&key=$(key)"
+        URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[i+1])&key=$(keys[1])"
         response = Requests.json(get(URL))
-        produce("recibido")
+        #produce("recibido")
         #sleep(1)
-        println(j,'\t',mode[i+1],'\t',response["status"])
+        #println(j,'\t',mode[i+1],'\t',response["status"])
+        if response["status"] = "OVER_QUERY_LIMIT"
+            keys = circshift(keys,1)
+            URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[i+1])&key=$(keys[1])"
+            response = Requests.json(get(URL))
+        end
         if response["rows"][1]["elements"][1]["status"] != "OK"; continue; end
         durs[j,2 + 2*i+1] = response["rows"][1]["elements"][1]["distance"]["value"]
         durs[j,2 + 2*i+2] = response["rows"][1]["elements"][1]["duration"]["value"]
+        durs[9] = now()
     end
+    return keys
 end
-######################ESTA ES LA SECCION DE PRUEBA ########################################################################################################
-#origin = string(estaciones[1,2],",",estaciones[1,3])
-# destination = string(estaciones[11,2],"%2C",estaciones[11,3])
-## for i = 2:50
-##       #origin = origin*string("|",estaciones[i,2],",",estaciones[i,3])
-#    destination = destination*string("%7C",estaciones[i,2],"%2C",estaciones[i,3])
-# end
-# URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[2])&key=$(key)"
-# response = Requests.json(get(URL))
-# response["rows"][1]["elements"][1]["distance"]["value"]
-# response["rows"][1]["elements"][1]["duration"]["value"]
-#
-# destination = string(estaciones[estaciones[:,1].==211,:][2],"%2C",estaciones[estaciones[:,1].==211,:][3])
-# origin  = string(estaciones[estaciones[:,1].==217,:][2],",",estaciones[estaciones[:,1].==217,:][3])
+
 #####################################################AQUI EMPIEZA #############################################################
 
 #usos = int(readcsv("usofilt2_2015.csv"))#el uso de estaciones filtrado
 #ns = 452 #numero de estaciones que hay
-durs = zeros(300,8)  #es el arreglo de salida
-mode = ["driving", "bicycling", "transit"] #los modos que hay para hacer el request #tamanio del bloque
-key = keys[1]
+durs = zeros(300,9)  #es el arreglo de salida
+mode = ["driving", "bicycling", "transit"] #los modos que hay para hacer el request
 
 for j = 1:300
     #mat = usos[usos[:,1].==j,:] #trabaja sobre el indice j de los datos,
@@ -60,21 +53,25 @@ for j = 1:300
 #        destination = destination*string("%7C",estaciones[estaciones[:,1].==mat[l*sb+i,2],:][2],"%2C",estaciones[estaciones[:,1].==mat[l*sb+i,2],:][3])
 #        durs[j][l*sb+i,1] = mat[l*sb+i,1]; durs[j][l*sb+i,2] = mat[l*sb+i,2]
 #    end
-    taskQ = Task(() -> manda(j,mode,origin,destination,key,durs))
-    for x in taskQ
-    end
-    #falta enviar el request faltante (sobrante de n/sb)
+    keys = manda(j,mode,origin,destination,keys,durs) #aqui se hace el request.
+    #taskQ = Task(() -> manda(j,mode,origin,destination,key,durs)) #esto es para usarlo como task, solo en el momento de usar sleep.
+    #for x in taskQ
+    #end
 
-    # lat2 = estaciones[estaciones[:,1].==mat[nit[1]*sb+1,2],:][2]; long2 =estaciones[estaciones[:,1].==mat[nit[1]*sb+1,2],:][3]
-    # destination = string(lat2,"%2C",long2)
-    # for i = 2:nit[2]
-    #     destination = destination*string("%7C",estaciones[estaciones[:,1].==mat[nit[1]*sb+i,2],:][2],"%2C",estaciones[estaciones[:,1].==mat[nit[1]*sb+i,2],:][3])
-    #     durs[j][nit[1]*sb+i,1] = mat[nit[1]*sb+i,1]; durs[j][nit[1]*sb+i,2] = mat[nit[1]*sb+i,2]
-    # end
-    # args = [nit[1],sb,nit[2]]
-    # taskQ = Task(() -> manda(args,mode,origin,destination,key,durs[j]))
-    # for x in taskQ
-    # end
 end
 writedlm("datos.dat",durs)
 ##################
+######################ESTA ES LA SECCION DE PRUEBA ########################################################################################################
+#origin = string(estaciones[1,2],",",estaciones[1,3])
+# destination = string(estaciones[11,2],"%2C",estaciones[11,3])
+## for i = 2:50
+##       #origin = origin*string("|",estaciones[i,2],",",estaciones[i,3])
+#    destination = destination*string("%7C",estaciones[i,2],"%2C",estaciones[i,3])
+# end
+# URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[2])&key=$(key)"
+# response = Requests.json(get(URL))
+# response["rows"][1]["elements"][1]["distance"]["value"]
+# response["rows"][1]["elements"][1]["duration"]["value"]
+#
+# destination = string(estaciones[estaciones[:,1].==211,:][2],"%2C",estaciones[estaciones[:,1].==211,:][3])
+# origin  = string(estaciones[estaciones[:,1].==217,:][2],",",estaciones[estaciones[:,1].==217,:][3])
