@@ -5,7 +5,7 @@ first300 = readdlm("estaciones300.dat", Int64)
 # lat, long
 #traffic_model = "best_guess"
 #transit_mode = "subway"
-function manda(j::Int64,mode::Array{ASCIIString,1},origin::AbstractString,destination::AbstractString,keys::Array{AbstractString,1}, durs::Array{Float64,2})
+function manda(j::Int64,mode::Array{ASCIIString,1},origin::AbstractString,destination::AbstractString,keys::Array{ASCIIString,1}, durs::Array{Any,2})
 #    l,j,nit = args
 #    if sb != nit
 #        tam = nit
@@ -19,7 +19,7 @@ function manda(j::Int64,mode::Array{ASCIIString,1},origin::AbstractString,destin
         #produce("recibido")
         #sleep(1)
         #println(j,'\t',mode[i+1],'\t',response["status"])
-        if response["status"] = "OVER_QUERY_LIMIT"
+        if response["status"] == "OVER_QUERY_LIMIT"
             keys = circshift(keys,1)
             URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[i+1])&key=$(keys[1])"
             response = Requests.json(get(URL))
@@ -27,7 +27,7 @@ function manda(j::Int64,mode::Array{ASCIIString,1},origin::AbstractString,destin
         if response["rows"][1]["elements"][1]["status"] != "OK"; continue; end
         durs[j,2 + 2*i+1] = response["rows"][1]["elements"][1]["distance"]["value"]
         durs[j,2 + 2*i+2] = response["rows"][1]["elements"][1]["duration"]["value"]
-        durs[9] = now()
+        durs[j,9] = now()
     end
     return keys
 end
@@ -36,7 +36,7 @@ end
 
 #usos = int(readcsv("usofilt2_2015.csv"))#el uso de estaciones filtrado
 #ns = 452 #numero de estaciones que hay
-durs = zeros(300,9)  #es el arreglo de salida
+durs = Array{Any}(300,9)  #es el arreglo de salida
 mode = ["driving", "bicycling", "transit"] #los modos que hay para hacer el request
 
 for j = 1:300
@@ -59,7 +59,7 @@ for j = 1:300
     #end
 
 end
-writedlm("datos.dat",durs)
+writedlm("/home/alfredo/Dropbox/BiciUso/datos-$(now()).dat",durs)
 ##################
 ######################ESTA ES LA SECCION DE PRUEBA ########################################################################################################
 #origin = string(estaciones[1,2],",",estaciones[1,3])
