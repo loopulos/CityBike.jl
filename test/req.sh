@@ -1,2 +1,2 @@
 #!usr/bash/bin
-julia google_maps.jl 
+julia /home/alfredo/Git/CityBike.jl/test/google_maps.jl 
