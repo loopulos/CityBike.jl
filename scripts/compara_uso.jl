@@ -35,6 +35,7 @@ data[:travel_time] = map((x, y) -> (x-y).value / (1000*60), DateTime(data[:time_
 
 writetable("uso_2015_mod.csv", data)
 
+find(x -> x < 0, data[:travel_time])
 
 # formato de fecha 2015
 date_format = Dates.DateFormat("y-m-d")
