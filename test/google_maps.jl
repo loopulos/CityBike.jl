@@ -46,6 +46,7 @@ durs = Array{Any}(301,9)  #es el arreglo de salida
 mode = ["driving", "bicycling", "transit"] #los modos que hay para hacer el request
 durs[1,1] = "start_id";durs[1,2] = "end_id";durs[1,3] = "driving_dist"; durs[1,4] = "driving_time"; durs[1,5] = "bike_dist";durs[1,6] ="bike_time"
 durs[1,7] = "transit_dist"; durs[1,8] = "transit_time"; durs[1,9] = "date"
+println("Initialization passed!")
 for j = 2:301
     #mat = usos[usos[:,1].==j,:] #trabaja sobre el indice j de los datos,
     #nit = divrem(size(mat)[1], sb) #se obtiene cuantas iteraciones de 100 y el sobrante para hacer el request
@@ -60,12 +61,14 @@ for j = 2:301
 #        destination = destination*string("%7C",estaciones[estaciones[:,1].==mat[l*sb+i,2],:][2],"%2C",estaciones[estaciones[:,1].==mat[l*sb+i,2],:][3])
 #        durs[j][l*sb+i,1] = mat[l*sb+i,1]; durs[j][l*sb+i,2] = mat[l*sb+i,2]
 #    end
+    println("Going for the $(j-1) request")
     keys = manda(j,mode,origin,destination,keys,durs) #aqui se hace el request.
     #taskQ = Task(() -> manda(j,mode,origin,destination,key,durs)) #esto es para usarlo como task, solo en el momento de usar sleep.
     #for x in taskQ
     #end
 
 end
+println("Requests passed!")
 writedlm("/home/alfredo/Dropbox/BiciUso/datos-$(now()).dat",durs)
 ##################
 ######################ESTA ES LA SECCION DE PRUEBA ########################################################################################################
