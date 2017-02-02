@@ -54,7 +54,7 @@ for i in 1:length(days)
 
     ### ========================================== ###
 
-    bike_plt = plot(transpose(bike_data_per_day),
+    bike_plt = plot(day_hour[:,2][hours], transpose(bike_data_per_day),
         leg = false,
         marker = :o,
         markersize = 2.5,
@@ -62,9 +62,10 @@ for i in 1:length(days)
         linealpha = 0.8,
         title = "bike",
         xlabel = "hora",
+        xticks = day_hour[:,2][hours],
         ylabel = "tiempo en seg")
 
-    transit_plt = plot(transpose(transit_data_per_day),
+    transit_plt = plot(day_hour[:,2][hours], transpose(transit_data_per_day),
         leg = false,
         marker = :o,
         markersize = 2.5,
@@ -72,9 +73,10 @@ for i in 1:length(days)
         linealpha = 0.8,
         title = "transit",
         # ylabel = "tiempo en seg",
-        xlabel = "hora")
+        xlabel = "hora",
+        xticks = day_hour[:,2][hours])
 
-    driving_plt = plot(transpose(driving_data_per_day),
+    driving_plt = plot(day_hour[:,2][hours], transpose(driving_data_per_day),
         leg = false,
         marker = :o,
         markersize = 2.5,
@@ -82,7 +84,8 @@ for i in 1:length(days)
         linealpha = 0.8,
         title = "driving",
         # ylabel = "tiempo en seg",
-        xlabel = "hora")
+        xlabel = "hora",
+        xticks = day_hour[:,2][hours])
 
     plot(bike_plt, transit_plt, driving_plt,
         layout = @layout([bike_plt transit_plt driving_plt]),
@@ -90,7 +93,7 @@ for i in 1:length(days)
 
     # gui()
 
-    savefig("$(homedir())/Google\ Drive/EcoBiciDATA/figs/tiempo_viaje_hr_dia_$(days[i]).png")
+    savefig("$(homedir())/Google\ Drive/EcoBiciDATA/EcoBiciDF/figs_google/tiempo_viaje_hr_dia_$(days[i]).png")
 
 end
 ### ========================================== ###
