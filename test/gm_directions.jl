@@ -30,7 +30,7 @@ function manda(j::Int64,mode::Array{ASCIIString,1},origin::AbstractString,destin
             response = Requests.json(get(URL))
             println(j,'\t',mode[i+1],'\t',response["status"],'\t', now())
         end
-        if response["rows"][1]["elements"][1]["status"] != "OK"; continue; end #si hay algun otro tipo de error solo va a ignorar el error.
+        #if response["rows"][1]["elements"][1]["status"] != "OK"; continue; end #si hay algun otro tipo de error solo va a ignorar el error.
         durs[j,2 + 2*i+1] = response["routes"][1]["legs"][1]["distance"]["value"]
         durs[j,2 + 2*i+2] = response["routes"][1]["legs"][1]["duration"]["value"]
         durs[j,11] = Dates.format(now(), "e, dd u yyyy HH:MM:SS")#now()
@@ -72,18 +72,17 @@ println("Requests passed!")
 writedlm("/home/alfredo/Dropbox/BiciUso/datos-$(now()).dat",durs)
 ##################
 ######################ESTA ES LA SECCION DE PRUEBA ########################################################################################################
-origin = string(estaciones[1,2],",",estaciones[1,3])
-destination = string(estaciones[11,2],"%2C",estaciones[11,3])
-key = "AIzaSyCBZKUNqVU_8-NrMbp_LSoxK37PT-8qV6c"
-##for i = 2:50
+# origin = string(estaciones[1,2],",",estaciones[1,3])
+# destination = string(estaciones[11,2],"%2C",estaciones[11,3])
+# key = "AIzaSyCBZKUNqVU_8-NrMbp_LSoxK37PT-8qV6c"
+# ##for i = 2:50
 ##       #origin = origin*string("|",estaciones[i,2],",",estaciones[i,3])
 #    destination = destination*string("%7C",estaciones[i,2],"%2C",estaciones[i,3])
 # end
-URL = "https://maps.googleapis.com/maps/api/directions/json?units=metric&origin=$(origin)&destination=$(destination)&mode=$(mode[2])&key=$(key)"
-URL = "https://maps.googleapis.com/maps/api/directions/json?origin=75+9th+Ave+New+York,+NY&destination=MetLife+Stadium+1+MetLife+Stadium+Dr+East+Rutherford,+NJ+07073&key=$(key)"
-response = Requests.json(get(URL))
-response["routes"][1]["legs"][1]["distance"]["value"]
-response["routes"][1]["legs"][1]
-#
+# URL = "https://maps.googleapis.com/maps/api/directions/json?units=metric&origin=$(origin)&destination=$(destination)&mode=$(mode[2])&key=$(key)"
+# response = Requests.json(get(URL))
+# response["routes"][1]["legs"][1]["distance"]["value"]
+# response["routes"][1]["legs"][1]
+# #
 # destination = string(estaciones[estaciones[:,1].==211,:][2],"%2C",estaciones[estaciones[:,1].==211,:][3])
 # origin  = string(estaciones[estaciones[:,1].==217,:][2],",",estaciones[estaciones[:,1].==217,:][3])

@@ -1,2 +1,2 @@
 #!/bin/sh
-julia /home/alfredo/Git/CityBike.jl/test/google_maps.jl 
+julia /home/alfredo/Git/CityBike.jl/test/gm_directions.jl 
