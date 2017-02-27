@@ -1,6 +1,6 @@
 using Requests
 cd("/home/alfredo/Git/CityBike.jl/test")
-keys = ["AIzaSyCXia5c3mcH4rxdFtLl6qOew0g_W5qOGrE","AIzaSyDrhZkvOxrJkyCYwr17i7evXod8LCF1AEo","AIzaSyAryDOjorWqN5UIPG0uDQ3Ka2SNQnjjC0M","AIzaSyAKnBvFaRTFSqmIypjDsUvuqVbP-aKeIVg","AIzaSyDm2onf5ESbukrMTooYIL1Ln89ulcdtmkg","AIzaSyDXAlJ1PM0nnIPZGkia5GynofyoayRlG_o","AIzaSyD7ba-NzLSKOvkMYBoqZeMktSvfKn4cy9M"]
+keys = ["AIzaSyDgz4wDtznfCMQ4tsfBog236H1XJeuOc8k","AIzaSyBzZtZhJHZw9T0poHb8YUHhLfBxlCvVmsA","AIzaSyBRvszwt_YH-lw2LJZIxCxBenmahLaTQIc","AIzaSyCXia5c3mcH4rxdFtLl6qOew0g_W5qOGrE","AIzaSyDrhZkvOxrJkyCYwr17i7evXod8LCF1AEo","AIzaSyAryDOjorWqN5UIPG0uDQ3Ka2SNQnjjC0M","AIzaSyAKnBvFaRTFSqmIypjDsUvuqVbP-aKeIVg","AIzaSyDm2onf5ESbukrMTooYIL1Ln89ulcdtmkg","AIzaSyDXAlJ1PM0nnIPZGkia5GynofyoayRlG_o","AIzaSyD7ba-NzLSKOvkMYBoqZeMktSvfKn4cy9M"]
 estaciones = [readcsv("estacionesn.csv")[2:end,1] readcsv("estacionesn.csv")[2:end,10:11]]
 first300 = readdlm("estaciones300.dat", Int64)
 # lat, long
@@ -13,7 +13,7 @@ function manda(j::Int64,mode::Array{ASCIIString,1},origin::AbstractString,destin
 #    else
 #        tam = sb
 #    end
-    for i = 0:(length(mode)-1) #se realizan los requests en los 3 modos
+    for i = 0:(length(mode)-1) #se realizan los requests en los 4 modos
 
         URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[i+1])&key=$(keys[1])"
         response = Requests.json(get(URL))
@@ -33,7 +33,7 @@ function manda(j::Int64,mode::Array{ASCIIString,1},origin::AbstractString,destin
         if response["rows"][1]["elements"][1]["status"] != "OK"; continue; end #si hay algun otro tipo de error solo va a ignorar el error.
         durs[j,2 + 2*i+1] = response["rows"][1]["elements"][1]["distance"]["value"]
         durs[j,2 + 2*i+2] = response["rows"][1]["elements"][1]["duration"]["value"]
-        durs[j,9] = Dates.format(now(), "e, dd u yyyy HH:MM:SS")#now()
+        durs[j,11] = Dates.format(now(), "e, dd u yyyy HH:MM:SS")#now()
     end
     return keys
 end
@@ -42,10 +42,10 @@ end
 
 #usos = int(readcsv("usofilt2_2015.csv"))#el uso de estaciones filtrado
 #ns = 452 #numero de estaciones que hay
-durs = Array{Any}(301,9)  #es el arreglo de salida
-mode = ["driving", "bicycling", "transit"] #los modos que hay para hacer el request
+durs = Array{Any}(301,11)  #es el arreglo de salida
+mode = ["driving", "bicycling", "transit","walking"] #los modos que hay para hacer el request
 durs[1,1] = "start_id";durs[1,2] = "end_id";durs[1,3] = "driving_dist"; durs[1,4] = "driving_time"; durs[1,5] = "bike_dist";durs[1,6] ="bike_time"
-durs[1,7] = "transit_dist"; durs[1,8] = "transit_time"; durs[1,9] = "date"
+durs[1,7] = "transit_dist"; durs[1,8] = "transit_time"; durs[1,9] = "walking_dist"; durs[1,10] = "walking_time"; durs[1,11] = "date"
 println("Initialization passed!")
 for j = 2:301
     #mat = usos[usos[:,1].==j,:] #trabaja sobre el indice j de los datos,
