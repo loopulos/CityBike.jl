@@ -1,5 +1,8 @@
 using StatPlots
-using DataFrames
+using Plots, DataFrames
+
+gr()
+pyplot()
 
 function get_day_hour(tr_date)
 
@@ -15,7 +18,9 @@ n_travs = 300
 
 data_folder = "$(homedir())/Downloads/BiciUso"
 
-all_files = readdir(data_folder)
+# all_files = readdir(data_folder)
+# filtra solo los archivos de datos
+all_files = filter(x -> ismatch(r"^datos.",x), readdir(data_folder))
 
 day_hour = transpose(hcat([broadcast(x -> parse(Int,x), match(r".(\d+)T(\d+):.", file).captures) for file in all_files]...))
 
@@ -93,7 +98,8 @@ for i in 1:length(days)
 
     # gui()
 
-    savefig("$(homedir())/Google\ Drive/EcoBiciDATA/EcoBiciDF/figs_google/tiempo_viaje_hr_dia_$(days[i]).png")
+    # savefig("$(homedir())/Google\ Drive/EcoBiciDATA/EcoBiciDF/figs_google/tiempo_viaje_hr_dia_$(days[i]).png")
+    savefig("$(homedir())/Google\ Drive/EcoBiciDATA/EcoBiciDF/figs_google/otra_api_tiempo_viaje_hr_dia_$(days[i]).png")
 
 end
 ### ========================================== ###
@@ -120,7 +126,8 @@ for i in 1:length(days)
         ylabel = "time",
         lab = ["driving" "bike" "transit"])
 
-    savefig("$(homedir())/Google\ Drive/EcoBiciDATA/EcoBiciDF/figs_google/distancia_tiempo_dia_$(days[i]).png")
+    # savefig("$(homedir())/Google\ Drive/EcoBiciDATA/EcoBiciDF/figs_google/distancia_tiempo_dia_$(days[i]).png")
+    savefig("$(homedir())/Google\ Drive/EcoBiciDATA/EcoBiciDF/figs_google/otra_api_distancia_tiempo_dia_$(days[i]).png")
 
 
 end
