@@ -29,6 +29,8 @@ id_end  = [k[2] for k in keys(route)]
 
 times_day = 2
 
+test_line
+
 vals = filter(x -> x >= lw_thr, collect(values(route)))
 
 max_time_day = div(maximum(vals), 365)
