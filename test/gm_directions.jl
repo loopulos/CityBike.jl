@@ -22,7 +22,7 @@ function manda(j::Int64,mode::Array{ASCIIString,1},origin::AbstractString,destin
         println(j,'\t',mode[i+1],'\t',response["status"],'\t', now())
         while response["status"] == "OVER_QUERY_LIMIT" #esta linea es para usar otra key del arreglo, una vez que no se pueda hacer mas requests
             keys = circshift(keys,1)
-            URL = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$(origin)&destinations=$(destination)&mode=$(mode[i+1])&key=$(keys[1])"
+            URL = "https://maps.googleapis.com/maps/api/directions/json?units=metric&origin=$(origin)&destination=$(destination)&mode=$(mode[i+1])&key=$(keys[1])"
             response = Requests.json(get(URL))
             println(j,'\t',mode[i+1],'\t',response["status"],'\t', now())
         end
@@ -72,15 +72,15 @@ println("Requests passed!")
 writedlm("/home/alfredo/Dropbox/BiciUso/datos-$(now()).dat",durs)
 ##################
 ######################ESTA ES LA SECCION DE PRUEBA ########################################################################################################
-# origin = string(estaciones[1,2],",",estaciones[1,3])
-# destination = string(estaciones[11,2],"%2C",estaciones[11,3])
-# key = "AIzaSyCBZKUNqVU_8-NrMbp_LSoxK37PT-8qV6c"
+#origin = string(estaciones[1,2],",",estaciones[1,3])
+#destination = string(estaciones[11,2],"%2C",estaciones[11,3])
+#key = "AIzaSyCBZKUNqVU_8-NrMbp_LSoxK37PT-8qV6c"
 # ##for i = 2:50
 ##       #origin = origin*string("|",estaciones[i,2],",",estaciones[i,3])
 #    destination = destination*string("%7C",estaciones[i,2],"%2C",estaciones[i,3])
 # end
-# URL = "https://maps.googleapis.com/maps/api/directions/json?units=metric&origin=$(origin)&destination=$(destination)&mode=$(mode[2])&key=$(key)"
-# response = Requests.json(get(URL))
+#URL = "https://maps.googleapis.com/maps/api/directions/json?units=metric&origin=$(origin)&destination=$(destination)&mode=$(mode[2])&key=$(key)"
+#response = Requests.json(get(URL))
 # response["routes"][1]["legs"][1]["distance"]["value"]
 # response["routes"][1]["legs"][1]
 # #
