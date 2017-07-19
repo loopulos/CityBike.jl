@@ -16,7 +16,7 @@ data_path = "/$(homedir())/Ecobici"
 files = filter(x -> ismatch( r"filt_\d+.csv", x), readdir(data_path))
 
 # mes es la columna 3
-data = readcsv(data_path*"/"*files[6])[2:end, :]
+data = readcsv(data_path*"/"*files[1])[2:end, :]
 
 ###================###================###================###================###
 
@@ -47,7 +47,30 @@ if length(month_data) != 0.
 end
 
 # end
+###================###================###================###================###
+# Genera matriz de adyacencia (sparse)
 
+i_st = [k[1] for k in keys(trip)]
+e_st = [k[2] for k in keys(trip)]
+
+norm_factor = sum(collect(values(trip)))
+
+adj_mat = sparse(i_st, e_st, collect(values(trip)))
+# adj_mat = sparse(i_st, e_st, collect(values(trip)) ./ norm_factor)
+
+deg_in = zeros(Int, size(adj_mat, 2))
+deg_out = zeros(Int, size(adj_mat, 1))
+
+for j in 1:size(adj_mat, 2)
+    deg_in[j] = length(nzrange(adj_mat, j))
+    deg_out[j] = length(nzrange(transpose(adj_mat), j))
+    # println(j, "\t", deg_in, "\t", deg_out, "\t", deg_in == deg_out, "\t", deg_out - deg_in)
+end
+
+histogram(deg_in, alpha =0.5)
+histogram!(deg_out, alpha = 0.5)
+gui()
+###================###================###================###================###
 i_st = [repr(collect(keys(trip))[i][1]) for i in 1:length(collect(keys(trip)))]
 e_st = [repr(collect(keys(trip))[i][2]) for i in 1:length(collect(keys(trip)))]
 
@@ -71,30 +94,6 @@ gui()
 gif(anim, "distros.gif", fps = 2)
 ###================###================###================###================###
 
-# histogram(filter(x -> x >= threshold, vals), nbins = 50)
-
-id_start = [k[1] for k in keys(trip)]
-id_end  = [k[2] for k in keys(trip)]
-
-times_month = 2 #numero de veces que se usa (al menos en un mes)
-
-#vals = filter(x -> x >= times_month, collect(values(trip)))
-
-# max_time_day = div(maximum(vals), 365)
-# max_times_year = div(sum(collect(values(route))), 365) / 446
-
-###================###================###================###================###
-
-adj = spzeros(Float64, maximum(id_start), maximum(id_end))
-adj = zeros(Float64, maximum(id_start), maximum(id_end))
-
-norm_factor = sum(collect(values(route)))
-
-for key in keys(route)
-    adj[key[1], key[2]] = route[key] / norm_factor
-end
-
-histogram(reshape(adj, 1, length(adj)), nbins = 50)
 
 ###================###================###================###================###
 
