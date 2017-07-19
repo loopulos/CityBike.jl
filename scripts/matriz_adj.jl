@@ -21,6 +21,8 @@ data = readcsv(data_path*"/"*files[1])[2:end, :]
 ###================###================###================###================###
 
 m = 2
+
+for m in 1:12
 month_data = view(data, find(x->x==m, data[:,3]), 1:2)
 
 trip = Dict()
@@ -34,29 +36,23 @@ for i in 1:size(month_data,1)
     end
 end
 
+vals = collect(values(trip))
+
+histogram(vals, bins = range(minimum(vals)-0.5, maximum(vals)+1), xlims = (0,13), xticks = minimum(vals):maximum(vals), normed = true)
+
+# histogram(filter(x -> x >= threshold, vals), nbins = 50)
+end
+###================###================###================###================###
+
 id_start = [k[1] for k in keys(trip)]
 id_end  = [k[2] for k in keys(trip)]
 
 times_month = 2 #numero de veces que se usa (al menos en un mes)
 
-vals = filter(x -> x >= times_month, collect(values(trip)))
+#vals = filter(x -> x >= times_month, collect(values(trip)))
 
 # max_time_day = div(maximum(vals), 365)
 # max_times_year = div(sum(collect(values(route))), 365) / 446
-
-###================###================###================###================###
-
-vals = collect(values(route))
-
-histogram(vals, bins = range(minimum(vals)-0.5, maximum(vals)+1), xlims = (0,13), xticks = minimum(vals):maximum(vals), normed = true)
-
-xlims!(0, 15)
-xticks!(collect(1:11))
-
-xlims!((365,maximum(vals)))
-
-histogram(filter(x -> x >= threshold, vals), nbins = 50)
-histogram(filter(x -> x >= threshold, vals), nbins = 50)
 
 ###================###================###================###================###
 
