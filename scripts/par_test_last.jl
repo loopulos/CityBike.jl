@@ -32,7 +32,8 @@ for i in 1:size(Ddata,1)
     try
         st_time  = parsedate(join([Ddata[i,5],Ddata[i,6]]," "))
         end_time = parsedate(join([Ddata[i,8],Ddata[i,9]]," "))
-        println(file, Ddata[i,3], ",", Ddata[i,4], ",", Dates.month(st_time), ",", Dates.dayofweek(st_time), ",",Dates.value(Dates.Hour(st_time)), ",", round(Int, Dates.value(end_time - st_time) / (60*1000)) )
+        # println(file, Ddata[i,3], ",", Ddata[i,4], ",", Dates.month(st_time), ",", Dates.dayofweek(st_time), ",",Dates.value(Dates.Hour(st_time)), ",", round(Int, Dates.value(end_time - st_time) / (60*1000)) )
+        println(file, Ddata[i,4], ",", Ddata[i,7], ",", Dates.month(st_time), ",", Dates.dayofweek(st_time), ",",Dates.value(Dates.Hour(st_time)), ",", round(Int, Dates.value(end_time - st_time) / (60*1000)) )
     catch
         println(Ddata[i,3],'\t', i)
     end

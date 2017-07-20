@@ -140,3 +140,6 @@ plt[:plot](out_keys_sort, out_vals_sort ./ out_tot_counts, ".-", label = "out_"*
 plt[:plot](in_keys_sort, in_vals_sort ./ in_tot_counts, ".-", label = "in_"*replace(split(data_path*"/"*file, ".")[1], "filt_", ""))
 
 # end
+
+
+get_dict_st()

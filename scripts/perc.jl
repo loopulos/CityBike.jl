@@ -3,6 +3,7 @@ using Plots, LightGraphs, GraphPlot
 using LightGraphs
 using GraphPlot
 using Compose
+using DataFrames
 
 include("funcs.jl")
 
@@ -12,26 +13,23 @@ pyplot()
 
 ###================###================###================###================###
 
-data_path = "/$(homedir())/Google\ Drive/EcobiciDATA/EcobiciDF"
-data_path = "/$(homedir())/Ecobici"
+data_path = "$(homedir())/Google\ Drive/EcobiciDATA/EcobiciDF"
+data_path = "$(homedir())/Ecobici"
 
 files = filter(x -> ismatch( r"filt_\d+.csv", x), readdir(data_path))
 
 # mes es la columna 3
-data = readcsv(data_path*"/"*files[1])[2:end, :]
+data = readcsv(data_path*"/"*files[7])[2:end, :]
 
 ###================###================###================###================##
 
-m = 12
-# for m in 1:12
-month_data = view(data, find(x -> x == m, data[:,3]), 1:2)
+hubs = Vector{Vector{Int}}(12)
 
 trip = trip_dict(data)
 
-histogram(collect(values(trip)))
+# histogram(collect(values(trip)))
 
 ###================###================###================###================###
-
 
 th_vals = linspace(minimum(collect(values(trip))),maximum(collect(values(trip))), 25)
 cl_sizes = zeros(length(th_vals))
@@ -52,12 +50,44 @@ all_st = maximum(unique(union(i_st,e_st)))
 plot(collect(th_vals) , cl_sizes ./ all_st, m = :o, leg = false)
 plot(collect(th_vals)./365 , cl_sizes ./ all_st, m = :o, leg = false)
 
+ceil(th_vals[5]) #2010
+
+th = Dict()
+
 # umbral de "percolacion"
-th = ceil(th_vals[6])
+th[2010] = 366.
+th[2011] = 942.
+th[2012] = 618.
+th[2013] = 1124.
+th[2014] = 1215.
+th[2015] = 1217.
+th[2016] =
+
+th = [366. ,942., 618., 1124., 1215., 1217.]
+
 
 ###================###================###================###================###
 
-filt_trip = filter((k,v) -> v >= th, trip)
+filt_trip = filter((k,v) -> v >= th[i], trip)
+
+
+i_st = [k[1] for k in keys(filt_trip)]
+e_st = [k[2] for k in keys(filt_trip)]
+
+writecsv("adj_2016.csv",hcat(i_st, e_st))
+
+# st_info = readtable(data_path*"/estacionesn.csv")
+# sort(st_info, cols = (:id))
+# writetable("st_name.csv", st_info[[:id, :name]], separator = ',', header = false)
+
+
+st_name = get_dict_st(readcsv(data_path*"/estacionesn.csv"))
+
+writecsv("st_name.csv", hcat(sort(union(i_st, e_st)), [st_name[i][1] for i in sort(union(i_st, e_st))]))
+###================###================###================###================###
+
+trip = trip_dict(data)
+filt_trip = filter((k,v) -> v >= th[i], trip)
 
 net = DiGraph(get_adj_mat(trip))
 net = DiGraph(get_adj_mat(filt_trip))
@@ -77,7 +107,46 @@ scatter!(collect(keys(deg_h_out)), collect(values(deg_h_out)), m = :o,  xscale =
 scatter!(collect(keys(deg_h_out)), collect(values(deg_h_out)), m = :o, label = "out")
 
 
-i_st = [k[1] for k in keys(filt_trip)]
-e_st = [k[2] for k in keys(filt_trip)]
+###================###================###================###================###
 
-writecsv("adj_test.csv",hcat(i_st, e_st))
+plot(sort(indegree(net), rev = true), xlims = (1, maximum(indegree(net))), xscale = :log10, yscale = :log10)
+plot!(sort(outdegree(net), rev = true), xlims = (1, maximum(outdegree(net))), xscale = :log10, yscale = :log10)
+
+plot(sort(indegree(net), rev = true), xlims = (1, maximum(indegree(net))), label = "in", m = :o)
+plot!(sort(outdegree(net), rev = true), xlims = (1, maximum(outdegree(net))), label = "out", m = :o)
+
+in_hub = find(x -> indegree(net)[x] == Δin(net), collect(vertices(net)))
+out_hub = find(x -> outdegree(net)[x] == Δout(net), collect(vertices(net)))
+
+st_name[in_hub[1]]
+st_name[out_hub[1]]
+
+top = 10
+
+in_hubs = Vector{Vector{Int}}(6)
+out_hubs = Vector{Vector{Int}}(6)
+
+th = [366. ,942., 618., 1124., 1215., 1217.]
+
+for m in 1:6
+
+    println(m)
+
+    data = readcsv(data_path*"/"*files[m])[2:end, :]
+
+    trip = trip_dict(data)
+
+    filt_trip = filter((k,v) -> v >= th[m], trip)
+
+    net = DiGraph(get_adj_mat(filt_trip))
+
+    in_hubs[m] = sortperm(indegree(net), rev = true)[1:top]
+    out_hubs[m] = sortperm(outdegree(net), rev = true)[1:top]
+end
+
+# [st_st_name[i][1] for i in sortperm(indegree(net), rev = true)[1:top]]
+plot(in_hubs, collect(1:10),  m = :)o)
+g_uei()
+
+writecsv("in_hubs_year.csv", hcat(collect(1:10), in_hubs...))
+writecsv("out_hubs_year.csv", hcat(collect(1:10), out_hubs...))
