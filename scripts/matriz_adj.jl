@@ -17,8 +17,10 @@ files = filter(x -> ismatch( r"filt_\d+.csv", x), readdir(data_path))
 
 # mes es la columna 3
 data = readcsv(data_path*"/"*files[6])[2:end, :]
-
+st = readcsv(data_path*"/estacionesn.csv")
 ###================###================###================###================###
+
+dict_st = get_dict_st(st)
 
 m = 2
 
