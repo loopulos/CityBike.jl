@@ -21,7 +21,7 @@ net2 = DiGraph(get_adj_mat(filt_trip))
 
 graphplot(net2,
     node_weights=indegree(net2),
-    marker = (:heat, :rect),
+    dim=3,
     line = (3, 0.5, :blues),
     marker_z=collect(vertices(net2))
 )

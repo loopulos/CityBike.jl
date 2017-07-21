@@ -21,7 +21,6 @@ y = "2016"
 #raw_data = readcsv("/media/alfredo/Killer-Rabbit1.5/Ecobicis/CDMX/$(y).csv")
 raw_data = readcsv("/home/alfredo/2016/$(y).csv")
 
-
 file = open("filt_$(y).csv", "w")
 
 # Distribuye datos en procesadores
@@ -35,7 +34,7 @@ for i in 1:size(Ddata,1)
         # println(file, Ddata[i,3], ",", Ddata[i,4], ",", Dates.month(st_time), ",", Dates.dayofweek(st_time), ",",Dates.value(Dates.Hour(st_time)), ",", round(Int, Dates.value(end_time - st_time) / (60*1000)) )
         println(file, Ddata[i,4], ",", Ddata[i,7], ",", Dates.month(st_time), ",", Dates.dayofweek(st_time), ",",Dates.value(Dates.Hour(st_time)), ",", round(Int, Dates.value(end_time - st_time) / (60*1000)) )
     catch
-        println(Ddata[i,3],'\t', i)
+        println(Ddata[i,4],'\t', i)
     end
 end
 

@@ -1,35 +1,22 @@
 
-using Plots, LightGraphs, GraphPlot
+using Plots, LightGraphs
+
 using LightGraphs
 using GraphPlot
 using Compose
 using DataFrames
 
-include("funcs.jl")
-
-gui()
-gr()
-pyplot()
-
-###================###================###================###================###
-
-data_path = "$(homedir())/Google\ Drive/EcobiciDATA/EcobiciDF"
-data_path = "$(homedir())/Ecobici"
-
-files = filter(x -> ismatch( r"filt_\d+.csv", x), readdir(data_path))
-
-# mes es la columna 3
-data = readcsv(data_path*"/"*files[7])[2:end, :]
-
-###================###================###================###================##
-
-hubs = Vector{Vector{Int}}(12)
-
-trip = trip_dict(data)
-
+include("$(homedir())/GitRepos/CityBike.jl/scripts/funcs.jl")
 # histogram(collect(values(trip)))
 
-###================###================###================###================###
+data_path = "$(homedir())/Google\ Drive/EcobiciDATA/EcobiciDF"
+
+files = filter
+
+###=============###================###================###================###
+
+data = readcsv(data_path*"/"*files[m])[2:end, :]
+trip = trip_dict(data)
 
 th_vals = linspace(minimum(collect(values(trip))),maximum(collect(values(trip))), 25)
 cl_sizes = zeros(length(th_vals))
@@ -70,11 +57,10 @@ th = [366. ,942., 618., 1124., 1215., 1217.]
 
 filt_trip = filter((k,v) -> v >= th[i], trip)
 
-
 i_st = [k[1] for k in keys(filt_trip)]
 e_st = [k[2] for k in keys(filt_trip)]
 
-writecsv("adj_2016.csv",hcat(i_st, e_st))
+writecsv("adj_2015.csv",hcat(i_st, e_st, collect(values(filt_trip))))
 
 # st_info = readtable(data_path*"/estacionesn.csv")
 # sort(st_info, cols = (:id))
