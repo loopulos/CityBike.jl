@@ -33,6 +33,9 @@ plot(collect(th_vals), cl_sizes, m = :o)
 i_st = [k[1] for k in keys(trip)]
 e_st = [k[2] for k in keys(trip)]
 
+# adyacencias sin filtrar
+writecsv("adj_2010.csv",hcat(i_st, e_st, collect(values(trip)) ./ maximum(collect(values(trip))) ) )
+
 # todas las estaciones posibles
 all_st = maximum(unique(union(i_st,e_st)))
 
@@ -63,9 +66,6 @@ e_st = [k[2] for k in keys(filt_trip)]
 
 # adyacencias filtradas
 writecsv("adj_2016.csv",hcat(i_st, e_st, collect(values(filt_trip))))
-
-# adyacencias sin filtrar
-writecsv("adj_2010.csv",hcat(i_st, e_st, collect(values(trip)) ./ maximum(collect(values(trip))) ) )
 
 ###================###================###================###================###
 
