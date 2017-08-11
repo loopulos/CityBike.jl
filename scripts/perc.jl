@@ -17,7 +17,7 @@ files = filter(x -> ismatch(r"^filt_.", x), readdir(data_path))
 
 ###=============###================###================###================###
 
-data = readcsv(data_path*"/"*files[1])[2:end, :]
+data = readcsv(data_path*"/"*files[8])[2:end, :]
 trip = trip_dict(data)
 
 th_vals = linspace(minimum(collect(values(trip))),maximum(collect(values(trip))), 25)
@@ -28,19 +28,21 @@ for i in 1:length(th_vals)
     cl_sizes[i] = maximum(collect(values(cl)))
 end
 
-plot(collect(th_vals), cl_sizes, m = :o)
+#plot(collect(th_vals), cl_sizes, m = :o)
 
 i_st = [k[1] for k in keys(trip)]
 e_st = [k[2] for k in keys(trip)]
-
-# adyacencias sin filtrar
-writecsv("adj_2010.csv",hcat(i_st, e_st, collect(values(trip)) ./ maximum(collect(values(trip))) ) )
 
 # todas las estaciones posibles
 all_st = maximum(unique(union(i_st,e_st)))
 
 plot(collect(th_vals) , cl_sizes ./ all_st, m = :o, leg = false)
 plot(collect(th_vals)./365 , cl_sizes ./ all_st, m = :o, leg = false)
+
+savefig("perc_2017.png")
+
+# adyacencias sin filtrar
+writecsv("adj_2017.csv",hcat(i_st, e_st, collect(values(trip)) ./ maximum(collect(values(trip))) ) )
 
 ceil(th_vals[7]) #2010
 
@@ -59,7 +61,7 @@ th = [366. ,942., 618., 1124., 1215., 1217., 1886.]
 
 ###================###================###================###================###
 
-filt_trip = filter((k,v) -> v >= th[7], trip)
+filt_trip = filter((k,v) -> v >= th[1], trip)
 
 i_st = [k[1] for k in keys(filt_trip)]
 e_st = [k[2] for k in keys(filt_trip)]
