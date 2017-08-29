@@ -75,7 +75,7 @@ function set_label(U, i, c, label, cl_size)
 		for j in 1:n
 			k = U[i][j]
 
-			if label[k] == 0
+			if get(label, k, 0) == 0
 				label[k] = label[i]
                 cl_size[label[i]] += 1
 				set_label(U,k,c,label,cl_size)
@@ -122,12 +122,12 @@ function cluster_n_label(neigh)
 	c = 1 # etiqueta cluster inicial
 	n = size(neigh,1)
 
-	label = zeros(Int64,n)
+	label = Dict{Int64,Int64}()
 	cl_size = Dict{Int64,Int64}()
 
 	for i in 1:n
 
-		if label[i] == 0
+		if get(label, i, 0) == 0
 
 			cl_size[c] = 1
 			label[i] = c
