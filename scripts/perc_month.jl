@@ -19,9 +19,12 @@ files = filter(x -> ismatch(r"^filt_.", x), readdir(data_path))
 years = [match(r"(\w+_\d+||\w+_\d+-\w+)\.\w+$", f).captures[1] for f in files]
 # years = [match(r"(\d+)$", i).captures[1] for i in [match(r"^(\w+_\d+)", f).captures[1] for f in files]]
 ###=============###================###================###================###
-j = 1
+j = 2
 
 data = readcsv(data_path*"/"*files[j])[2:end, :]
+
+trip = trip_dict(data) # acumulado anual
+
 
 m = 2
 
