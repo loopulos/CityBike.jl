@@ -37,6 +37,7 @@ labels = Dict()
 
 # cl, lab = clusters_th(trip, th_vals[i]) ####################
 cl, lab = clusters(trip) ####################
+
 cl_sizes[i] = maximum(collect(values(cl)))
 
 labels[i] = lab
