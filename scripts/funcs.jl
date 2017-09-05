@@ -174,3 +174,32 @@ function clusters_th(trip, th)
 end
 
 ###================###================###
+
+# calcula clusters del diccionario "trip"
+function clusters(trip)
+
+    i_st = [k[1] for k in keys(trip)]
+    e_st = [k[2] for k in keys(trip)]
+
+    # todas las estaciones posibles
+    all_st = unique(union(i_st,e_st))
+
+    # diccionario con las vecindades de cada nodo
+    # llave -> id_st
+    # valor -> [id_st]
+    neigh = Array{Array{Int,1},1}(maximum(all_st))
+
+    for i in 1:length(neigh)
+        neigh[i] = Int[]
+    end
+
+    for i in all_st
+        neigh[i] = [k[2] for k in collect(keys(filter((k,v) -> k[1] == i, trip)))]
+    end
+
+    cl, lab = cluster_n_label(neigh)
+
+    return cl, lab
+end
+
+###================###================###

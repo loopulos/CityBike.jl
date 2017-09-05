@@ -12,18 +12,20 @@ include("$(homedir())/GitRepos/CityBike.jl/scripts/funcs.jl")
 # histogram(collect(values(trip)))
 
 data_path = "$(homedir())/Google\ Drive/EcobiciDATA/EcobiciDF"
+
 output_path = data_path*"/Graphs/threshold"
+output_path = data_path*"/csv_data"
+
 # fig_path = data_path*"/perc_month"
 fig_path = data_path*"/perc_year"
-# data_path = "$(homedir())/Ecobici"
 
 files = filter(x -> ismatch(r"^filt_.", x), readdir(data_path))
 years = [match(r"(\w+_\d+||\w+_\d+-\w+)\.\w+$", f).captures[1] for f in files]
 # years = [match(r"(\d+)$", i).captures[1] for i in [match(r"^(\w+_\d+)", f).captures[1] for f in files]]
 ###=============###================###================###================###
 
-# j = 1
-for j in 1:9
+j = 3
+# for j in 1:9
 
     println(files[j])
 
@@ -32,7 +34,7 @@ for j in 1:9
     data = readcsv(data_path*"/"*files[j])[2:end, :]
 
     # m = 2
-    for m in 2:12
+    for m in 1:12
 
         println(m)
         # filter by month (column 3)
@@ -66,22 +68,21 @@ for j in 1:9
             # adj = hcat(i_st, e_st, collect(values(filt_trip)) ./ maximum(collect(values(filt_trip))))
             adj = hcat(i_st, e_st)
 
-            # adj_file = open("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", "w+")
+            adj_file = open("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", "w+")
 
-            # println(adj_file, "Source,Target")
+            println(adj_file, "Source,Target")
             # println(adj_file, "Source,Target,Weight")
 
-            # for i in 1:size(adj,1)
-            #     # println(adj_file, repr(adj[i,:])[5:end-1])
-            #     println(adj_file, repr(adj[i,:])[2:end-1])
-            # end
+            for i in 1:size(adj,1)
+                println(adj_file, join(split(strip(repr(adj[i,:]), ['[', ']', ' ']))))
+            end
 
-            # close(adj_file)
+            close(adj_file)
 
-            writecsv("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", adj)
+            # writecsv("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", adj)
         end
 
-        plot!(pl, th_vals, cl_sizes, marker = :o, leg = "$(m)")
+        plot!(pl, th_vals, cl_sizes, marker = :o, label = "$(m)")
         # savefig(fig_path*"/$(years[j])_m_$(m).png")
 
     end
@@ -106,6 +107,8 @@ st_info = readtable(data_path*"/estacionesn.csv")
 
 # i = 1
 for i in 1:length(th_vals)
+
+    println(i)
     # filt_trip = filter((k,v) -> v >= th_vals[i], trip)
     #
     # i_st = [k[1] for k in keys(filt_trip)]
@@ -121,7 +124,6 @@ for i in 1:length(th_vals)
 
     stations = st_info[[find( x -> x == st, st_info[:id])[1] for st in 1:85], [:id, :name,:location_lat, :location_lon] ]
     stations[:Cluster] = st_labels[:, i]
-
 
     rename!(stations, :id, :Id)
     rename!(stations, :name, :Label)

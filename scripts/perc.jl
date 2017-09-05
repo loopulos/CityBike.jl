@@ -2,30 +2,64 @@
 using Plots, LightGraphs, DataFrames
 
 using LightGraphs
-#using GraphPlot
-#using Compose
-using DataFrames
+using Plots, DataFrames
 
 include("$(homedir())/GitRepos/CityBike.jl/scripts/funcs.jl")
-include("funcs.jl")
+# include("funcs.jl")
 # histogram(collect(values(trip)))
 
 data_path = "$(homedir())/Google\ Drive/EcobiciDATA/EcobiciDF"
-data_path = "$(homedir())/Ecobici"
+# data_path = "$(homedir())/Ecobici"
+
+output_path = data_path*"/Graphs/threshold"
+output_path = data_path*"/Graphs/csv_data"
+
+# fig_path = data_path*"/perc_month"
+fig_path = data_path*"/perc_year"
 
 files = filter(x -> ismatch(r"^filt_.", x), readdir(data_path))
+years = [match(r"(\w+_\d+||\w+_\d+-\w+)\.\w+$", f).captures[1] for f in files]
 
 ###=============###================###================###================###
 
-data = readcsv(data_path*"/"*files[7])[2:end, :]
+j = 2
+data = readcsv(data_path*"/"*files[2])[2:end, :]
 trip = trip_dict(data)
 
 th_vals = linspace(minimum(collect(values(trip))),maximum(collect(values(trip))), 25)
 cl_sizes = zeros(length(th_vals))
+max_st = zeros(Int, length(th_vals))
+
+labels = Dict()
 
 for i in 1:length(th_vals)
     cl, lab = clusters_th(trip, th_vals[i])
     cl_sizes[i] = maximum(collect(values(cl)))
+
+    labels[i] = lab
+
+    filt_trip = filter((k,v) -> v >= th_vals[i], trip)
+
+    i_st = [k[1] for k in keys(filt_trip)]
+    e_st = [k[2] for k in keys(filt_trip)]
+
+    max_st[i] = maximum(unique(union(i_st,e_st)))
+
+    adj = hcat(i_st, e_st)
+    # adj = hcat(i_st, e_st, collect(values(filt_trip)) ./ sum(collect(values(trip))))
+
+    # adj_file = open("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", "w+")
+
+    println(adj_file, "Source,Target")
+    # println(adj_file, "Source,Target,Weight")
+
+    for i in 1:size(adj,1)
+        println(adj_file, join(split(strip(repr(adj[i,:]), ['[', ']', ' ']))))
+    end
+
+    # close(adj_file)
+
+    writecsv("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", adj)
 end
 
 plot(collect(th_vals), cl_sizes, m = :o)
