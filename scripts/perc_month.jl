@@ -1,76 +1,92 @@
 
-using Plots, LightGraphs, DataFrames
+# using Plots, LightGraphs, DataFrames
 
 # using LightGraphs
 #using GraphPlot
 #using Compose
-using DataFrames
-using Plots
+# using DataFrames
+using Plots, DataFrames
 
 include("$(homedir())/GitRepos/CityBike.jl/scripts/funcs.jl")
-include("funcs.jl")
+# include("funcs.jl")
 # histogram(collect(values(trip)))
 
 data_path = "$(homedir())/Google\ Drive/EcobiciDATA/EcobiciDF"
 output_path = data_path*"/Graphs/threshold"
+# fig_path = data_path*"/perc_month"
+fig_path = data_path*"/perc_year"
 # data_path = "$(homedir())/Ecobici"
 
 files = filter(x -> ismatch(r"^filt_.", x), readdir(data_path))
 years = [match(r"(\w+_\d+||\w+_\d+-\w+)\.\w+$", f).captures[1] for f in files]
 # years = [match(r"(\d+)$", i).captures[1] for i in [match(r"^(\w+_\d+)", f).captures[1] for f in files]]
 ###=============###================###================###================###
-j = 1
 
-data = readcsv(data_path*"/"*files[j])[2:end, :]
+# j = 1
+for j in 1:9
 
-m = 2
+    println(files[j])
 
-# filter by month (column 3)
-if length(find(x -> x == m, data[:, 3])) != zero(Int)
-    month_data = data[find(x -> x == m, data[:, 3]), :]
-    trip = trip_dict(month_data)
+    pl = plot()
+
+    data = readcsv(data_path*"/"*files[j])[2:end, :]
+
+    # m = 2
+    for m in 2:12
+
+        println(m)
+        # filter by month (column 3)
+        if length(find(x -> x == m, data[:, 3])) != zero(Int)
+            month_data = data[find(x -> x == m, data[:, 3]), :]
+            trip = trip_dict(month_data)
+        end
+
+        th_vals = linspace(minimum(collect(values(trip))),maximum(collect(values(trip))), 25)
+        cl_sizes = zeros(length(th_vals))
+        max_st = zeros(Int, length(th_vals))
+
+        labels = Dict()
+
+        # adj_file = open("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", "w+")
+        # adj_file = open("$(output_path)/test.csv", "w+")
+
+        for i in 1:length(th_vals)
+            cl, lab = clusters_th(trip, th_vals[i])
+
+            cl_sizes[i] = maximum(collect(values(cl)))
+            labels[i] = lab
+
+            filt_trip = filter((k,v) -> v >= th_vals[i], trip)
+
+            i_st = [k[1] for k in keys(filt_trip)]
+            e_st = [k[2] for k in keys(filt_trip)]
+
+            max_st[i] = maximum(unique(union(i_st,e_st)))
+
+            # adj = hcat(i_st, e_st, collect(values(filt_trip)) ./ maximum(collect(values(filt_trip))))
+            adj = hcat(i_st, e_st)
+
+            # adj_file = open("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", "w+")
+
+            # println(adj_file, "Source,Target")
+            # println(adj_file, "Source,Target,Weight")
+
+            # for i in 1:size(adj,1)
+            #     # println(adj_file, repr(adj[i,:])[5:end-1])
+            #     println(adj_file, repr(adj[i,:])[2:end-1])
+            # end
+
+            # close(adj_file)
+
+            writecsv("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", adj)
+        end
+
+        plot!(pl, th_vals, cl_sizes, marker = :o, leg = "$(m)")
+        # savefig(fig_path*"/$(years[j])_m_$(m).png")
+
+    end
+        savefig(fig_path*"/$(years[j])_1.png")
 end
-
-th_vals = linspace(minimum(collect(values(trip))),maximum(collect(values(trip))), 25)
-cl_sizes = zeros(length(th_vals))
-max_st = zeros(Int, length(th_vals))
-
-labels = Dict()
-
-adj_file = open("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", "w+")
-adj_file = open("$(output_path)/test.csv", "w+")
-
-for i in 1:length(th_vals)
-    cl, lab = clusters_th(trip, th_vals[i])
-
-    cl_sizes[i] = maximum(collect(values(cl)))
-    labels[i] = lab
-
-    filt_trip = filter((k,v) -> v >= th_vals[i], trip)
-
-    i_st = [k[1] for k in keys(filt_trip)]
-    e_st = [k[2] for k in keys(filt_trip)]
-
-    max_st[i] = maximum(unique(union(i_st,e_st)))
-
-    # adj = hcat(i_st, e_st, collect(values(filt_trip)) ./ maximum(collect(values(filt_trip))))
-    adj = hcat(i_st, e_st)
-
-    # adj_file = open("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", "w+")
-
-    # println(adj_file, "Source,Target")
-    # println(adj_file, "Source,Target,Weight")
-
-    # for i in 1:size(adj,1)
-    #     # println(adj_file, repr(adj[i,:])[5:end-1])
-    #     println(adj_file, repr(adj[i,:])[2:end-1])
-    # end
-
-    # close(adj_file)
-
-    writecsv("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", adj)
-end
-
 ###================###================###================###================###
 
 st_labels = zeros(Int, maximum(max_st), length(th_vals))
