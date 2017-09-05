@@ -17,7 +17,7 @@ files = filter(x -> ismatch(r"^filt_.", x), readdir(data_path))
 
 ###=============###================###================###================###
 
-data = readcsv(data_path*"/"*files[8])[2:end, :]
+data = readcsv(data_path*"/"*files[7])[2:end, :]
 trip = trip_dict(data)
 
 th_vals = linspace(minimum(collect(values(trip))),maximum(collect(values(trip))), 25)
@@ -28,7 +28,7 @@ for i in 1:length(th_vals)
     cl_sizes[i] = maximum(collect(values(cl)))
 end
 
-#plot(collect(th_vals), cl_sizes, m = :o)
+plot(collect(th_vals), cl_sizes, m = :o)
 
 i_st = [k[1] for k in keys(trip)]
 e_st = [k[2] for k in keys(trip)]
@@ -38,11 +38,6 @@ all_st = maximum(unique(union(i_st,e_st)))
 
 plot(collect(th_vals) , cl_sizes ./ all_st, m = :o, leg = false)
 plot(collect(th_vals)./365 , cl_sizes ./ all_st, m = :o, leg = false)
-
-savefig("perc_2017.png")
-
-# adyacencias sin filtrar
-writecsv("adj_2017.csv",hcat(i_st, e_st, collect(values(trip)) ./ maximum(collect(values(trip))) ) )
 
 ceil(th_vals[7]) #2010
 
@@ -59,15 +54,19 @@ th[2016] = 1886.
 
 th = [366. ,942., 618., 1124., 1215., 1217., 1886.]
 
+
 ###================###================###================###================###
 
-filt_trip = filter((k,v) -> v >= th[1], trip)
+filt_trip = filter((k,v) -> v >= th[7], trip)
 
 i_st = [k[1] for k in keys(filt_trip)]
 e_st = [k[2] for k in keys(filt_trip)]
 
-# adyacencias filtradas
+
 writecsv("adj_2016.csv",hcat(i_st, e_st, collect(values(filt_trip))))
+writecsv("adj_2016.csv",hcat(i_st, e_st))
+
+hcat(i_st, e_st, collect(values(filt_trip)))
 
 ###================###================###================###================###
 
@@ -75,7 +74,6 @@ st_info = readtable(data_path*"/estacionesn.csv")
 
 writetable("st_name_2016.csv", sort(st_info[find( x -> in(x, union(i_st, e_st)), st_info[:id]), [:id, :name,:location_lat, :location_lon] ], cols = (:id)))
 
-writetable("st_name_2010.csv", sort(st_info[find( x -> in(x, union(i_st, e_st)), st_info[:id]), [:id, :name,:location_lat, :location_lon] ], cols = (:id)))
 
 st_name = get_dict_st(readcsv(data_path*"/estacionesn.csv"))
 
@@ -141,8 +139,8 @@ for m in 1:6
 end
 
 # [st_st_name[i][1] for i in sortperm(indegree(net), rev = true)[1:top]]
-plot(in_hubs, collect(1:10),  m = :o)
-gui()
+plot(in_hubs, collect(1:10),  m = :)o)
+g_uei()
 
 writecsv("in_hubs_year.csv", hcat(collect(1:10), in_hubs...))
 writecsv("out_hubs_year.csv", hcat(collect(1:10), out_hubs...))
