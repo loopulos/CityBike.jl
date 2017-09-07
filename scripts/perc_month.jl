@@ -56,6 +56,10 @@ for m in 1:12
     end
 
     th_vals = linspace(minimum(collect(values(trip))),maximum(collect(values(trip))), 30)
+=======
+adj_file = open("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", "w+")
+adj_file = open("$(output_path)/$(years[j])_th_$(i)_acum.csv", "w+")
+adj_file = open("$(output_path)/test.csv", "w+")
 
     all_th_vals[:, m] = th_vals
 
