@@ -203,3 +203,13 @@ function clusters(trip)
 end
 
 ###================###================###
+
+function make_dir_from_path(path)
+
+    try
+        mkdir(path)
+    catch error
+        println("Folder already exists")
+    end
+
+end

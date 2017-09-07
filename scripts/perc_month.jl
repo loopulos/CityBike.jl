@@ -22,72 +22,88 @@ fig_path = data_path*"/perc_year"
 files = filter(x -> ismatch(r"^filt_.", x), readdir(data_path))
 years = [match(r"(\w+_\d+||\w+_\d+-\w+)\.\w+$", f).captures[1] for f in files]
 # years = [match(r"(\d+)$", i).captures[1] for i in [match(r"^(\w+_\d+)", f).captures[1] for f in files]]
+
 ###=============###================###================###================###
 
 j = 3
-# for j in 1:9
+println(files[j])
 
-    println(files[j])
+output_path = data_path*"/$(years[j])"
 
-    pl = plot()
+make_dir_from_path(output_path)
+make_dir_from_path(output_path*"/adj_month")
+make_dir_from_path(output_path*"/cl_dist")
 
-    data = readcsv(data_path*"/"*files[j])[2:end, :]
+data = readcsv(data_path*"/"*files[j])[2:end, :]
 
-    # m = 2
-    for m in 1:12
+st_info = readtable(data_path*"/estacionesn.csv")
 
-        println(m)
-        # filter by month (column 3)
-        if length(find(x -> x == m, data[:, 3])) != zero(Int)
-            month_data = data[find(x -> x == m, data[:, 3]), :]
-            trip = trip_dict(month_data)
-        end
+###=============###================###================###================###
 
-        th_vals = linspace(minimum(collect(values(trip))),maximum(collect(values(trip))), 25)
-        cl_sizes = zeros(length(th_vals))
-        max_st = zeros(Int, length(th_vals))
+all_th_vals = zeros(30, 12)
 
-        labels = Dict()
+# m = 1
+for m in 1:12
 
-        # adj_file = open("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", "w+")
-        # adj_file = open("$(output_path)/test.csv", "w+")
+    println("m: ", m)
+    make_dir_from_path(output_path*"/adj_month/$(m)")
+    make_dir_from_path(output_path*"/cl_dist/$(m)")
 
-        for i in 1:length(th_vals)
-            cl, lab = clusters_th(trip, th_vals[i])
+    # filter by month (column 3)
+    if length(find(x -> x == m, data[:, 3])) != zero(Int)
+        month_data = data[find(x -> x == m, data[:, 3]), :]
+        trip = trip_dict(month_data)
+    end
 
-            cl_sizes[i] = maximum(collect(values(cl)))
-            labels[i] = lab
+    th_vals = linspace(minimum(collect(values(trip))),maximum(collect(values(trip))), 30)
 
-            filt_trip = filter((k,v) -> v >= th_vals[i], trip)
+    all_th_vals[:, m] = th_vals
 
-            i_st = [k[1] for k in keys(filt_trip)]
-            e_st = [k[2] for k in keys(filt_trip)]
+    cl_sizes = Dict()
+    labels = Dict()
 
-            max_st[i] = maximum(unique(union(i_st,e_st)))
+    for i in 1:length(th_vals)
 
-            # adj = hcat(i_st, e_st, collect(values(filt_trip)) ./ maximum(collect(values(filt_trip))))
-            adj = hcat(i_st, e_st)
+        println("th: ", i)
 
-            adj_file = open("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", "w+")
+        filt_trip = filter((k,v) -> v >= th_vals[i], trip)
 
-            println(adj_file, "Source,Target")
-            # println(adj_file, "Source,Target,Weight")
+        cl_sizes[i], labels[i] = clusters_th(filt_trip, th_vals[i])
 
-            for i in 1:size(adj,1)
-                println(adj_file, join(split(strip(repr(adj[i,:]), ['[', ']', ' ']))))
-            end
+        i_st = [k[1] for k in keys(filt_trip)]
+        e_st = [k[2] for k in keys(filt_trip)]
 
-            close(adj_file)
+        all_st = sort(unique(union(i_st,e_st)))
 
-            # writecsv("$(output_path)/$(years[j])_m_$(m)_th_$(i).csv", adj)
-        end
+        ### WEIGHTED LINKS
+        writetable("$(output_path)/adj_month/$(m)/$(years[j])_adj_th_$(i)_m_$(m)_weight.csv",
+                    DataFrame( Source = i_st, Target = e_st, Weight = collect(values(filt_trip)) ./ sum(collect(values(filt_trip))) ))
 
-        plot!(pl, th_vals, cl_sizes, marker = :o, label = "$(m)")
-        # savefig(fig_path*"/$(years[j])_m_$(m).png")
+        # ### JUST LINKS
+        # writetable("$(output_path)/adj_month/$(m)/$(years[j])_adj_th_$(i)_m_$(m).csv",
+        #             DataFrame( Source = i_st, Target = e_st ))
+
+        s_cl = sort(collect(cl_sizes[i]), by=x->x[2], rev = true)
+
+        # bar(collect(1:length(s_cl)), [x[2] for x in s_cl] ./ sum([x[2] for x in s_cl]), bar_position = :stack)
+        plot(collect(1:length(s_cl)), [x[2] for x in s_cl] ./ sum([x[2] for x in s_cl]), m = :o)
+
+        png("$(output_path)/cl_dist/$(m)/cl_dist_th_$(i)")
 
     end
-        savefig(fig_path*"/$(years[j])_1.png")
+
 end
+
+writecsv("$(output_path)/all_th_vals.csv", all_th_vals)
+
+###================###================###================###================###
+stations = st_info[[find( x -> x == st, st_info[:id])[1] for st in all_st], [:id, :name,:location_lat, :location_lon] ]
+
+rename!(stations, :id, :Id)
+rename!(stations, :name, :Label)
+
+writetable("$(output_path)/st_data_$(years[j])_m_$(m)_th_$(i).csv", sort(stations, cols = (:Id)))
+
 ###================###================###================###================###
 
 st_labels = zeros(Int, maximum(max_st), length(th_vals))
@@ -134,3 +150,40 @@ end
 ###================###================###================###================###
 
 stations = st_info[[find( x -> x == st, st_info[:id])[1] for st in collect(keys(labels[i]))], [:id, :name,:location_lat, :location_lon] ]
+
+###================###================###================###================###
+
+cl_sizes[10]
+
+for k in sort(collect(keys(cl_sizes[10])))
+    println(k," ", cl_sizes[10][k])
+end
+
+hcat(sort(collect(keys(cl_sizes[10]))), collect(1:length(keys(cl_sizes[10]))), [cl_sizes[10][i] for i in sort(collect(keys(cl_sizes[10])))] )
+
+sort(collect(values(cl_sizes[10])), rev=true)
+
+i = 1
+
+hcat(collect(1:length(values(cl_sizes[i]))), sort(collect(values(cl_sizes[i])), rev=true) ./ sum(collect(values(cl_sizes[i]))))
+
+# for i in 1:length(th_vals)
+for i in sort(collect(keys(cl_sizes[10])))
+
+    println(sort(collect(values(cl_sizes[i])), rev=true) ./ sum(collect(values(cl_sizes[i]))))
+end
+
+###================###================###================###================###
+
+pyplot()
+
+make_dir_from_path("$(output_path)/cl_dist/$(m)")
+
+for i in 1:length(th_vals)
+    println(i)
+    s_cl = sort(collect(cl_sizes[i]), by=x->x[2], rev = true)
+
+    bar(collect(1:length(s_cl)), [x[2] for x in s_cl] ./ sum([x[2] for x in s_cl]), bar_position = :stack)
+
+    png("$(output_path)/cl_dist/$(m)/cl_dist_th_$(i)")
+end
