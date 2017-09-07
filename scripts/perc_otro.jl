@@ -94,7 +94,6 @@ gui()
 
 size_hist = plot()
 
-
 # for k in sort(collect(keys(cl_sizes)))
 for k in sort(collect(keys(cl_sizes)))
     # histogram!(size_hist, collect(values(cl_sizes[k])), alpha = 0.5, norm = true, leg = false)
