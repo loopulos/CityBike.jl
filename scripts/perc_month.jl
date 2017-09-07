@@ -24,15 +24,67 @@ years = [match(r"(\w+_\d+||\w+_\d+-\w+)\.\w+$", f).captures[1] for f in files]
 # years = [match(r"(\d+)$", i).captures[1] for i in [match(r"^(\w+_\d+)", f).captures[1] for f in files]]
 
 ###=============###================###================###================###
-<<<<<<< HEAD
-j = 2
+
+j = 3
+println(files[j])
+
+output_path = data_path*"/$(years[j])"
+
+make_dir_from_path(output_path)
+make_dir_from_path(output_path*"/adj_month")
+make_dir_from_path(output_path*"/cl_dist")
 
 data = readcsv(data_path*"/"*files[j])[2:end, :]
 
-trip = trip_dict(data) # acumulado anual
+st_info = readtable(data_path*"/estacionesn.csv")
 
+###=============###================###================###================###
 
-m = 2
+all_th_vals = zeros(30, 12)
+
+# m = 1
+for m in 1:12
+
+    println("m: ", m)
+    make_dir_from_path(output_path*"/adj_month/$(m)")
+    make_dir_from_path(output_path*"/cl_dist/$(m)")
+
+    # filter by month (column 3)
+    if length(find(x -> x == m, data[:, 3])) != zero(Int)
+        month_data = data[find(x -> x == m, data[:, 3]), :]
+        trip = trip_dict(month_data)
+    end
+
+    th_vals = linspace(minimum(collect(values(trip))),maximum(collect(values(trip))), 30)
+
+    all_th_vals[:, m] = th_vals
+
+    cl_sizes = Dict()
+    labels = Dict()
+
+    for i in 1:length(th_vals)
+
+        println("th: ", i)
+
+        filt_trip = filter((k,v) -> v >= th_vals[i], trip)
+
+        cl_sizes[i], labels[i] = clusters_th(filt_trip, th_vals[i])
+
+        i_st = [k[1] for k in keys(filt_trip)]
+        e_st = [k[2] for k in keys(filt_trip)]
+
+        all_st = sort(unique(union(i_st,e_st)))
+
+        ### WEIGHTED LINKS
+        writetable("$(output_path)/adj_month/$(m)/$(years[j])_adj_th_$(i)_m_$(m)_weight.csv",
+                    DataFrame( Source = i_st, Target = e_st, Weight = collect(values(filt_trip)) ./ sum(collect(values(filt_trip))) ))
+
+        # ### JUST LINKS
+        # writetable("$(output_path)/adj_month/$(m)/$(years[j])_adj_th_$(i)_m_$(m).csv",
+        #             DataFrame( Source = i_st, Target = e_st ))
+
+        s_cl = sort(collect(cl_sizes[i]), by=x->x[2], rev = true)
+
 =======
 
 j = 3
@@ -47,7 +99,6 @@ make_dir_from_path(output_path*"/cl_dist")
 data = readcsv(data_path*"/"*files[j])[2:end, :]
 
 st_info = readtable(data_path*"/estacionesn.csv")
->>>>>>> master
 
 ###=============###================###================###================###
 
