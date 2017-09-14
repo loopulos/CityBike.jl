@@ -7,7 +7,7 @@ using DataFrames, Plots
 ###================###================###================###================###
 
 include("$(homedir())/GitRepos/CityBike.jl/scripts/funcs.jl")
-# include("funcs.jl")
+include("funcs.jl")
 # histogram(collect(values(trip)))
 
 data_path = "$(homedir())/Google\ Drive/EcobiciDATA/EcobiciDF"

@@ -57,7 +57,41 @@ function get_adj_mat(trip, norm=false)
 
     return f_adj
 end
+function get_adj_mat(stats, norm=false)
 
+    i_st = stats[:,1]
+    e_st = stats[:,2]
+
+    adj_mat = sparse(i_st, e_st, maximum(stats))
+
+    f_adj = zeros(Int, maximum(size(adj_mat)), maximum(size(adj_mat)))
+
+    if norm == false
+        for j in 1:size(adj_mat, 2)
+            for i in rowvals(adj_mat)[nzrange(adj_mat, j)]
+                f_adj[i,j] = 1
+            end
+        end
+    else
+        for j in 1:size(adj_mat, 2)
+            for i in rowvals(adj_mat)[nzrange(adj_mat, j)]
+                f_adj[i,j] = trip[i,j]
+            end
+        end
+    end
+
+    return f_adj
+end
+
+function get_stations(data, st_info)
+    i_st = map(Int64, data[:,1])
+    e_st = map(Int64, data[:,2])
+    all_st = sort(unique(union(i_st,e_st)))
+    stations = st_info[[find( x -> x == st, st_info[:id])[1] for st in all_st], [:id, :name,:location_lat, :location_lon] ]
+    rename!(stations, :id, :Id)
+    rename!(stations, :name, :Label)
+    return stations
+end
 ###================###================###
 ###  Algoritmo de Clustering Recursivo   ###
 ###================###================###

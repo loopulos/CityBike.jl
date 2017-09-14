@@ -7,11 +7,12 @@
 # using DataFrames
 using Plots, DataFrames
 
-include("$(homedir())/GitRepos/CityBike.jl/scripts/funcs.jl")
-# include("funcs.jl")
+#include("$(homedir())/GitRepos/CityBike.jl/scripts/funcs.jl")
+include("funcs.jl")
 # histogram(collect(values(trip)))
 
 data_path = "$(homedir())/Google\ Drive/EcobiciDATA/EcobiciDF"
+data_path = "/media/alfredo/Killer-Rabbit1.5/Ecobicis/CDMX/Filt"
 
 output_path = data_path*"/Graphs/threshold"
 output_path = data_path*"/csv_data"
