@@ -11,6 +11,7 @@ include("funcs.jl")
 # histogram(collect(values(trip)))
 
 data_path = "$(homedir())/Google\ Drive/EcobiciDATA/EcobiciDF"
+data_path = "/media/alfredo/Killer-Rabbit1.5/Ecobicis/CDMX/Filt"
 # data_path = "$(homedir())/Ecobici"
 
 # output_path = data_path*"/Graphs/threshold"
@@ -24,9 +25,9 @@ years = [match(r"(\w+_\d+||\w+_\d+-\w+)\.\w+$", f).captures[1] for f in files]
 
 ###=============###================###================###================###
 
-j = 2
+j = 4
 
-data = readcsv(data_path*"/"*files[2])[2:end, :]
+data = readcsv(data_path*"/"*files[4])[2:end, :]
 trip = trip_dict(data)
 
 i_st = [k[1] for k in keys(trip)]

@@ -42,7 +42,7 @@ st_info = readtable(data_path*"/estacionesn.csv")
 ###=============###================###================###================###
 
 all_th_vals = zeros(30, 12)
-
+ms = [1,2,3,4,5,6,7,8,9] #
 # m = 1
 for m in 1:12
 
@@ -51,7 +51,7 @@ for m in 1:12
     make_dir_from_path(output_path*"/cl_dist/$(m)")
 
     # filter by month (column 3)
-    if length(find(x -> x == m, data[:, 3])) != zero(Int)
+    if length(find(x -> x == m, data[:, 3])) != zero(Int) #for cummulative, use findin()
         month_data = data[find(x -> x == m, data[:, 3]), :]
         trip = trip_dict(month_data)
     end

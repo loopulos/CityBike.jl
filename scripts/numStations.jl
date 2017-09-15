@@ -1,6 +1,7 @@
 using PyPlot
 
 cd("/home/martin/Documents/datos_ecobici/EcobiciDF") #cubo
+cd("/media/alfredo/Killer-Rabbit1.5/Ecobicis/CDMX/Filt/")
 # cd("/Users/martinC3/Google Drive/EcobiciDATA/EcobiciDF") #C3
 
 pwd()
