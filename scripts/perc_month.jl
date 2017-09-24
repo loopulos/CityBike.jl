@@ -11,11 +11,12 @@ using Plots, DataFrames
 include("funcs.jl")
 # histogram(collect(values(trip)))
 
-data_path = "$(homedir())/Google\ Drive/EcobiciDATA/EcobiciDF"
-data_path = "/media/alfredo/Killer-Rabbit1.5/Ecobicis/CDMX/Filt"
+#data_path = "$(homedir())/Google\ Drive/EcobiciDATA/EcobiciDF"
+#data_path = "/media/alfredo/Killer-Rabbit1.5/Ecobicis/CDMX/Filt"
+data_path = "/home/alfredo/Ecobici/Filt"
 
 output_path = data_path*"/Graphs/threshold"
-output_path = data_path*"/csv_data"
+output_path = data_path*"/csv_data/2012"
 
 # fig_path = data_path*"/perc_month"
 fig_path = data_path*"/perc_year"

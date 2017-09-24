@@ -15,7 +15,7 @@ data_path = "/media/alfredo/Killer-Rabbit1.5/Ecobicis/CDMX/Filt"
 data_path = "$(homedir())/Ecobici/Filt"
 
 # output_path = data_path*"/Graphs/threshold"
-output_path = data_path*"/csv_data/2017"
+output_path = data_path*"/csv_data/2015/2-12"
 
 fig_path = data_path*"/perc_year"
 # fig_path = data_path*"/perc_month"
@@ -25,10 +25,21 @@ years = [match(r"(\w+_\d+||\w+_\d+-\w+)\.\w+$", f).captures[1] for f in files]
 
 ###=============###================###================###================###
 
-j = 8
-
+j = 6
+ms = [2,3,4,5,6,7,8,9,10,11,12]
 data = readcsv(data_path*"/"*files[j])[2:end, :]
-trip = trip_dict(data)
+m = 1
+
+if length(findin(data[:, 3], ms)) != zero(Int) #for cummulative, use findin()
+    month_data = data[findin(data[:, 3],ms), :]
+    trip = trip_dict(month_data)
+end
+
+if length(find(x -> x == m, data[:, 3])) != zero(Int) #for cummulative, use findin()
+    month_data = data[find(x -> x == m, data[:, 3]), :]
+    trip = trip_dict(month_data)
+end
+#trip = trip_dict(data)
 
 i_st = [k[1] for k in keys(trip)]
 e_st = [k[2] for k in keys(trip)]
@@ -53,7 +64,7 @@ rename!(stations, :id, :Id)
 rename!(stations, :name, :Label)
 
 # writetable("$(output_path)/st_data_$(years[j])_m_$(m)_th_$(i).csv", sort(stations, cols = (:Id)))
-writetable("$(output_path)/st_data_$(years[j]).csv", stations)
+writetable("$(output_path)/st_data_2015-212.csv", stations)
 
 ###================###================###================###================###
 
@@ -81,14 +92,17 @@ for i in 1:length(th_vals)
     all_st = sort(unique(union(i_st,e_st)))
 
     ### WEIGHTED LINKS
-    writetable("$(output_path)/$(years[j])_th_$(i)_adj_anual_weight.csv",
+    writetable("$(output_path)/$(years[j])_th_$(i)_adj_2015-212_weight.csv",
                 DataFrame( Source = i_st, Target = e_st, Weight = collect(values(filt_trip)) ./ sum(collect(values(filt_trip))) ))
 
     ### JUST LINKS
-    writetable("$(output_path)/$(years[j])_th_$(i)_adj_anual.csv",
+    writetable("$(output_path)/$(years[j])_th_2015-212_adj_anual.csv",
                 DataFrame( Source = i_st, Target = e_st ))
 
 end
+
+pyplot()
+gui()
 
 make_dir_from_path("$(output_path)/cl_dist/")
 
@@ -100,10 +114,6 @@ for i in 1:length(th_vals)
 
     png("$(output_path)/cl_dist/cl_dist_th_$(i)")
 end
-
-
-pyplot()
-gui()
 
 size_hist = plot()
 
